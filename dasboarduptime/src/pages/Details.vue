@@ -24,7 +24,9 @@
                                     id:$route.params.idAccount,
                                     key:$route.params.key,
                                     year: $route.params.date,
-                                    search: $route.params.search
+                                    search: $route.params.search,
+                                    interval:$route.params.interval,
+                                    daysSelected:$route.params.daysSelected
                                 }
                             }" tag="button" class="btn btn-lg btn-secondary btn-block">Retour à la liste
                             </router-link>    
@@ -135,9 +137,6 @@
                                 <div v-else-if="detail.ranges[4] <'99,6'" class="progress" style="height:70px">
                                   <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[4] + '%'}" v-bind:aria-valuenow="detail.ranges[4]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[4]}} %</strong></div>
                                 </div>
-
-
-
                             </div>
                         </div>    
                     </div>
@@ -239,14 +238,38 @@ export default {
                 let fourthWeek = ""+(startFirstWeek-604800*3)+"_"+(endFirstWeek-604800*3)+""
                 let week4 = "Du "+moment((startFirstWeek-604800*3), 'X').locale('fr').format('L')+" au "+moment((endFirstWeek-604800*3), 'X').locale('fr').format('L')
 
-                this.jours = [
-                    week4, week3, week2, week1
-                ]
+                this.jours = [week4, week3, week2, week1]
 
                 let range = yearRange+"-"+fourthWeek+"-"+thirdWeek+"-"+secondWeek+"-"+firstWeek
                 return range
             }
-        }
+        },
+        months:{
+            get : function(){
+                let months = Array()
+                let currentDate = parseInt(moment().format('X'))
+
+                let year = moment().format('YYYY')
+                if("year" in this.$route.params && parseInt(year) != this.$route.params.year)
+                    currentDate = parseInt(moment(this.$route.params.year, 'YYYY').endOf('year').format('X'))
+
+
+                let startMonth = parseInt(moment(currentDate, 'X').startOf('month').format('X'))
+
+
+                let startYear = moment(currentDate, 'X').startOf('year').format('X')
+                months.push(moment(currentDate, 'X').locale('fr').format('MMM'))
+                let dateInTheMonth = startMonth-1
+                while(dateInTheMonth>startYear){
+                    let name = moment(dateInTheMonth, 'X').locale('fr').format('MMM')
+                    startMonth = parseInt(moment(dateInTheMonth, 'X').startOf('month').format('X'))
+                    months.unshift(name)
+                    dateInTheMonth = startMonth-1 
+                }
+
+                return months
+            }
+        },
     },
     filters: {
         formatNumber (value) {
@@ -272,9 +295,11 @@ export default {
             let data = {
                 "site":[parseInt(vm.$route.params.id)],
                 "ranges":this.range,
+                "custom_interval":vm.$route.params.interval,
+                "custom_days_range":vm.$route.params.daysSelected
             }
             let detail = Array()
-            let url = 'http://localhost:3000/siteslogs'
+            let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
             axios.post(url, data).
             then(function (response) {
                 for(var i in response.data){

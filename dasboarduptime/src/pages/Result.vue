@@ -5,56 +5,8 @@
             <p id="text">Recherche : {{search}}</p>
             <p id="nbLine">Nombre de résultats : {{filter.length}}</p>
         </div>
-        <div id="accordion" class="bg-dark">
-
-            <div class="card">
-                <div class="card-header d-flex flex-row-reverse">
-                    <a class="collapsed card-link" data-toggle="collapse" href="#collapseTwo">
-                        Plages horaires
-                        <span class="fas fa-angle-double-down" aria-hidden="true"></span>
-                    </a>
-                </div>
-                <div id="collapseTwo" class="collapse" data-parent="#accordion">
-                    <div class="card-body">
-                        <div class="form-row">                            
-                            <div class="col-md-3 mb-3">
-                                <label for="Heure1">Heures</label>
-                                <select class="form-control" id="Heure1" v-model="firstHour">
-                                    <option v-for="item in hours" :val="item">{{item}}</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="Minute1">Minutes</label>
-                                <select class="form-control" id="Minute1" v-model="firstMinute">
-                                    <option v-for="item in minutes" :val="item">{{item}}</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="Heure2">Heures</label>
-                                <select class="form-control" id="Heure1" v-model="secondHour">
-                                    <option v-for="item in hours" :val="item">{{item}}</option>
-                                </select>
-                            </div>
-                            <div class="col-md-3 mb-3">
-                                <label for="Minute2">Minutes</label>
-                                <select class="form-control" id="Minute2" v-model="secondMinute">
-                                    <option v-for="item in minutes" :val="item">{{item}}</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div class="m-4">
-                            <div v-for="item in days" :val="item" class="form-check form-check-inline">
-                                <input class="form-check-input" type="checkbox" :id="item" :value="item" v-model="daysSelected">
-                                <label class="form-check-label" :for="item">{{item}}</label>
-                            </div>
-                        </div>
-                        <button type="button" class="btn btn-primary btn-lg btn-block" @click.prevent="searchWithHoraire">Valider</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <Table v-if="results != ''" @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount"></Table>
+        <PlageHoraire @searchWithHoraire="searchWithHoraire" :custominterval="custom_interval"></PlageHoraire>
+        <Table v-if="results != ''" @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected"></Table>
         <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark">
             <a href="#" class="navbar-brand">Réal. Actigraph</a>
         </nav>
@@ -67,12 +19,12 @@ import moment,{ duration } from 'moment'
 import jsoncsv from 'json2csv'
 import Header from '@/components/Header';
 import Table from '@/components/Table';
-import Planner from '@/components/Planner';
+import PlageHoraire from '@/components/PlageHoraire';
 
 export default {
     name : 'Result',
     components: {
-      Header, Table, Planner
+      Header, Table, PlageHoraire
     },
     data(){
         return{
@@ -87,14 +39,7 @@ export default {
             hasSearch : true,
             key:'',
             idAccount: '',
-            firstHour:'',
-            firstMinute:'',
-            secondHour:'',
-            secondMinute:'',
-            daysSelected: [],
-            days: ["monday", "tuesday", "wednesday","thursday", "friday", "saturday", "sunday"],
-            hours: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"],
-            minutes: ["00", "15", "30", "45"],
+            daysSelected:[],
             custom_interval:["0", "86400"],
             accounts: process.env.Accounts,
         } 
@@ -104,7 +49,6 @@ export default {
             get : function(){
                 let months = Array()
                 let currentDate
-
                 let year = moment().format('YYYY')
                 if("year" in this.$route.params && parseInt(year) != this.$route.params.year){
                     this.date = this.$route.params.year
@@ -168,13 +112,6 @@ export default {
         '$route': 'getData'
     },
     methods : {
-        searchWithHoraire: function(){
-            let firstHour = parseInt(this.firstHour)*3600 + parseInt(this.firstMinute) * 60;
-            let secondHour = parseInt(this.secondHour)*3600 + parseInt(this.secondMinute) * 60;
-            this.custom_interval = [firstHour.toString(), secondHour.toString()]
-            console.log(this.daysSelected)
-            this.getData()
-        },
         getMoyenne: function(){
             let vm = this
             var filter = vm.filter
@@ -186,9 +123,7 @@ export default {
             })
             if(typeof ranges[0] !== "undefined") {
                 var lengthArray = ranges[0].length
-
                 const reducer = (accumulator, currentValue) => accumulator + currentValue;
-            
                 for(var i = 0; i<lengthArray; i++){
                     var arrayElement = []
                     for(var j = 0; j<ranges.length; j++){
@@ -207,13 +142,15 @@ export default {
                 vm.average = [];
             }
         },
-
+        searchWithHoraire: function(interval, days){
+            this.custom_interval = interval;
+            this.daysSelected = days;
+            this.getData()
+        },
         getData: async function(){
             let vm = this
-            
             vm.results = await vm.getUptimeData()
             vm.filter = vm.results
-
             if(vm.search != "")
                 vm.searchInTab(vm.search)
             else 
@@ -222,7 +159,6 @@ export default {
                     if(vm.$route.params.search != "")
                         vm.searchInTab(vm.$route.params.search)
                 }
-
             vm.getMoyenne()
         },
         getUptimeData: async function(){
@@ -250,14 +186,25 @@ export default {
             } else {
                 route = vm.accounts[vm.idAccount]["key"]
             }
+
+            if(this.$route.params.interval !== undefined) {
+                this.custom_interval = this.$route.params.interval
+                this.$route.params.interval = undefined
+            } 
+            if(this.$route.params.daysSelected !== undefined) {
+                this.daysSelected = this.$route.params.daysSelected
+                this.$route.params.daysSelected = undefined
+            }
+
             vm.key = route
+            
             let data = {
                 "account":route,
                 "ranges":this.range,
                 "custom_interval":this.custom_interval,
                 "custom_days_range":this.daysSelected
             }
-            let url = 'http://localhost:3000/siteslogs'
+            let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
             await axios.post(url, data).
             then(function (response) {
                 var monitors = response.data
@@ -268,7 +215,6 @@ export default {
                     for(var j in logs)
                         if(logs[j].type == 1)
                             logsDuration.push(logs[j].duration)
-                    
                     
                     if(logsDuration.length > 0){
                         var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
@@ -394,8 +340,6 @@ export default {
                 
                 return 0;
             })
-
-
         },
         displayRow: function(index){
             var vm = this
@@ -441,7 +385,7 @@ export default {
                 maxLogDown.push({"date":dateInSecond, "duration":this.convertSecondIntoTime(duration), "timestamp":duration})
             return maxLogDown
             
-        }, 
+        },
         convertSecondIntoTime: function(second){
             let time = 0
             let days = moment.duration(second, 'seconds').days()
@@ -488,17 +432,6 @@ table thead th {
     filter: alpha(opacity=80)
 }
 
-#accordion {
-    width: 90%;
-    max-width: 90%;
-    padding-right: 0px;
-    padding-left: 0px;
-    margin-right: auto;
-    margin-left: auto;
-}
-.card-link {
-    color: #fff;
-}
 </style>
 
 

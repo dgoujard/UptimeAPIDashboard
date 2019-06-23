@@ -30,7 +30,9 @@
                                             key:keyAccount,
                                             date:date,
                                             search:search,
-                                            idAccount:idAccount
+                                            idAccount:idAccount,
+                                            interval:custom_interval,
+                                            daysSelected:daysSelected
                                         }
                                     }">
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
@@ -45,7 +47,9 @@
                                             key:keyAccount,
                                             date:date,
                                             search:search,
-                                            idAccount:idAccount
+                                            idAccount:idAccount,
+                                            interval:custom_interval,
+                                            daysSelected:daysSelected
                                         }   
                                     }">
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
@@ -59,7 +63,9 @@
                                             key:keyAccount,
                                             date:date,
                                             search:search,
-                                            idAccount:idAccount
+                                            idAccount:idAccount,
+                                            interval:custom_interval,
+                                            daysSelected:daysSelected
                                         }
                                     }">
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
@@ -94,14 +100,13 @@
 </template>
 <script>
 export default {
-    props: ['data', 'months', 'average', 'keyAccount', 'date', 'search', 'idAccount'],
+    props: ['data', 'months', 'average', 'keyAccount', 'date', 'search', 'idAccount','custom_interval', 'daysSelected'],
     name : 'Table',
     data(){
         return{
             sortKey: '',
         }
     },
-
     created() {
         this.$nextTick(function () {
             $('[data-toggle="tooltip"]').tooltip()
