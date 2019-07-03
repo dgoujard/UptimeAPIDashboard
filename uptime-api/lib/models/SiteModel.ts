@@ -24,4 +24,8 @@ export const SiteSchema = new Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'Accounts' 
     },
+    status: { 
+        type: Number,
+        required: 'Enter a status'
+    },
 });

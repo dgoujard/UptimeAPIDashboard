@@ -1,17 +1,12 @@
 import * as mongoose from 'mongoose';
 import { Request, Response } from 'express';
-import { AccountSchema } from '../models/AccountModel';
 import { SiteSchema } from '../models/SiteModel';
-import { LogTypeSchema } from '../models/LogTypeModel';
 import { LogSchema } from '../models/LogModel';
 
-import axios from 'axios';
 import * as moment from 'moment/moment';
 
 const Log = mongoose.model('Log', LogSchema);
-const Account = mongoose.model('Accounts', AccountSchema);
 const Site = mongoose.model('Sites', SiteSchema);
-const LogType = mongoose.model('LogType', LogTypeSchema);
 
 export class LogController{
     public deleteLogs(req: Request, res: Response){
@@ -32,7 +27,6 @@ export class LogController{
     // Get logs for each Sites
     public getLogsBySites = (req: Request, res: Response) => {
         const { site, ranges, custom_days_range = Array(), custom_interval = Array(), account=0} = req.body;
-        console.log(custom_days_range)
         let Logs = Log.find({}).populate('Site').populate('Type').exec();
         let Sites =  Site.find().populate('Account').exec();
         let allSites = Array();
@@ -87,7 +81,7 @@ export class LogController{
                 let siteArray = {
                     "id":element.uptimeId,
                     "id_object":element._id,
-                    "status": 2,
+                    "status": element.status,
                     "account":element.Account._id,
                     "custom_uptime_ranges":uptime.join("-"),
                     "custom_days_range": custom_days_range.join("-"),

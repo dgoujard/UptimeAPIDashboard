@@ -50,13 +50,14 @@ export class UpdateDataController{
     public saveAllSites = async () => {
         let Accounts = Account.find({}).exec();
         let SitePromises = Site.find({}).exec();
-        let LastLog = Log.findOne({}).sort('-datetime').exec();
+        let SiteDelete = Site.deleteMany({}).exec();
+        let LogDelete = Log.deleteMany({}).exec();
         let Logtype = LogType.find({}).exec();
         let newSiteAdd = Array();
         let newLogsAdd = Array();
         let result = {};
-        await Promise.all([Accounts, SitePromises, LastLog, Logtype]).then(async ([accounts, sites, lastlog, logtype]) => {
-            let uptimeData = await this.getUptimeData(accounts, lastlog)
+        await Promise.all([LogDelete, SiteDelete, Accounts, SitePromises, Logtype]).then(async ([logdelete, sitedelete, accounts, sites, logtype]) => {
+            let uptimeData = await this.getUptimeData(accounts, null)
             uptimeData.forEach(element => {
                 let AccountId = element.acountId;
                 element.forEach(element => {
@@ -64,30 +65,23 @@ export class UpdateDataController{
                     let newSite 
                     let siteConcerned = sites.filter(e => e.uptimeId === element.id);
                     var logs = element.logs
-                    if(siteConcerned.length === 0){
-                        element.create_datetime = logs[logs.length-1].datetime
-                        var site = {
-                            "name":element.friendly_name,
-                            "uptimeId":element.id,
-                            "url":element.url,
-                            "createDatetime":element.create_datetime,
-                            "Account":AccountId,
-                        }
-                        newSiteAdd.push(site)
-                        newSite = new Site(site);
-                        isNewSite = true
-                        newSite.save();
+                    element.create_datetime = logs[logs.length-1].datetime
+                    var site = {
+                        "name":element.friendly_name,
+                        "uptimeId":element.id,
+                        "url":element.url,
+                        "createDatetime":element.create_datetime,
+                        "Account":AccountId,
+                        "status":element.status
                     }
+                    newSiteAdd.push(site)
+                    newSite = new Site(site);
+                    isNewSite = true
+                    newSite.save();
                     logs.forEach(logelement => {
                         var siteConcernedId = 0
-                        if(isNewSite){
-                            siteConcernedId = newSite._id;
-                        }else{ 
-                            siteConcerned = sites.find(x => x.uptimeId === element.id);
-                            siteConcernedId = siteConcerned._id;
-                            
-                        }
-                        var logtypeConcerned = logtype.find(x=> x.logTypeId === logelement.type)
+                        siteConcernedId = newSite._id;
+                        var logtypeConcerned = logtype.find(x=> x.logTypeId === logelement.type);
                         var logtosave = {
                             "Site":siteConcernedId,
                             "Type":logtypeConcerned._id,
@@ -103,7 +97,7 @@ export class UpdateDataController{
                 });
             });
         }).then(() =>{
-            result = {'State':'sucess', 'message': 'Sites and Logs saved successfully', 'site_added':newSiteAdd.length,  'logs_added':newLogsAdd.length, 'sites':newSiteAdd}
+            result = {'State':'sucess', 'message': 'Sites and Logs saved successfully'}
         }).catch((error) => {
             result = {'State':'error', 'message': 'Sites cannot be saved'}
         });
