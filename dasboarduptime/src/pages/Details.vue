@@ -36,6 +36,11 @@
 
                 <div class="card-body">
                 <div class="row">
+                    <div class="col-lg-12">
+                        <Table v-if="filter != ''" :months="months" :data="filter" :average="[]" :keyAccount="$route.params.key" :date="date" :search="''" :idAccount="$route.params.idAccount" :custom_interval="$route.params.interval" :daysSelected="$route.params.daysSelected" :hasSort="false" :hasDisplayRow="false" :hasAverage="false" :hasSearch="false"></Table>
+                    </div>
+                </div>
+                <div class="row">
                     <div class="col-lg-9">
                         <div class="card border-primary">
                             <div class="card-header">
@@ -183,7 +188,7 @@
                     </div>
                 </div>
                 
-            </div>
+                </div>
             </div>
         </div>
         </div>
@@ -194,17 +199,20 @@
 import axios from 'axios'
 import moment from 'moment'
 import Header from '@/components/Header';
+import Table from '@/components/Table';
 
 export default {
     components: {
-        Header
+        Header, Table
     },
     data(){
         return{
             details : [{'name':'test'}],
             allLogs : [],
             jours : [],
-            hasSearch : false
+            hasSearch : false,
+            filter: [],
+            date: null
         } 
     },
     computed: {
@@ -237,9 +245,12 @@ export default {
                 let currentDate = parseInt(moment().format('X'))
 
                 let year = moment().format('YYYY')
-                if("year" in this.$route.params && parseInt(year) != this.$route.params.year)
+                if("year" in this.$route.params && parseInt(year) != this.$route.params.year){
                     currentDate = parseInt(moment(this.$route.params.year, 'YYYY').endOf('year').format('X'))
-
+                    this.date = this.$route.params.year;
+                } else {
+                    this.date = moment().format('YYYY')
+                }
                 let startMonth = parseInt(moment(currentDate, 'X').startOf('month').format('X'))
 
                 let startYear = moment(currentDate, 'X').startOf('year').format('X')
@@ -251,7 +262,6 @@ export default {
                     months.unshift(name)
                     dateInTheMonth = startMonth-1 
                 }
-
                 return months
             }
         },
@@ -312,6 +322,22 @@ export default {
                         "longerLogDown":longerLogDown,
                         "url":""
                     })
+
+                    vm.filter = [{
+                        "status":response.data[i].status,
+                        "id":response.data[i].id,
+                        "name":response.data[i].friendly_name,
+                        "ranges": [],
+                        "cumul":"cumul",
+                        "cumulSeconde":"",
+                        "longerLogDown":longerLogDown,
+                        "timestampLogdown": longerLogDown[0]["timestamp"],
+                        "url":response.data[i].url,
+                        "isVisible":true
+                    }]
+
+                    console.log(vm.filter);
+
                 }
             })
             return results;

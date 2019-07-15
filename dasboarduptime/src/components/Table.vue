@@ -13,7 +13,7 @@
                             <th scope="col" @click.prevent="sortBy('cumulSeconde')">Cumule</th>
                             <th scope="col"></th>
                         </tr>
-                        <tr class="MoyenneHeaders" >
+                        <tr v-if="hasAverage === true" class="MoyenneHeaders" >
                             <th v-for="average in average" :key="average.id">{{average}}</th>
                         </tr>  
                     </thead>
@@ -100,7 +100,7 @@
 </template>
 <script>
 export default {
-    props: ['data', 'months', 'average', 'keyAccount', 'date', 'search', 'idAccount','custom_interval', 'daysSelected'],
+    props: ['data', 'months', 'average', 'keyAccount', 'date', 'search', 'idAccount','custom_interval', 'daysSelected', 'hasSort', 'hasDisplayRow', 'hasAverage'],
     name : 'Table',
     data(){
         return{
@@ -121,11 +121,13 @@ export default {
     methods: {
         sortBy: function(name) {
             let vm = this
-            vm.$emit('sortBy', name)
+            if(this.sort === true)
+                vm.$emit('hasSortBy', name)
         }, 
         displayRow: function(index){
             let vm = this
-            vm.$emit('displayRow', index)
+            if(this.displayRow === true)
+                vm.$emit('hasDisplayRow', index)
         }
     }
 }
