@@ -6,7 +6,7 @@
             <p id="nbLine">Nombre de résultats : {{filter.length}}</p>
         </div>
         <PlageHoraire @searchWithHoraire="searchWithHoraire" :custominterval="custom_interval"></PlageHoraire>
-        <Table v-if="results != ''" @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected"></Table>
+        <Table v-if="results != ''" @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true"></Table>
         <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark">
             <a href="#" class="navbar-brand">Réal. Actigraph</a>
         </nav>
