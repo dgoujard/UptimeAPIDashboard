@@ -52,9 +52,7 @@
 
                                         <div class="progress">
                                           <div v-if="detail.ranges[3] > '99,9' || detail.ranges[3] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
-
                                           <div  v-else-if="detail.ranges[3] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
-
                                           <div  v-else-if="detail.ranges[3] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
                                         </div>
 
@@ -63,13 +61,10 @@
                                         <p class="dateranges">
                                             <strong>{{jours[1]}}</strong>
                                         </p>
-                                        
                                         <div class="progress">
-                                          <div v-if="detail.ranges[2] > '99,9' || detail.ranges[2] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
-
-                                          <div  v-else-if="detail.ranges[2] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
-
-                                          <div  v-else-if="detail.ranges[2] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
+                                          <div v-if="detail.ranges[2] > '99,9' || detail.ranges[2] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
+                                          <div  v-else-if="detail.ranges[2] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
+                                          <div  v-else-if="detail.ranges[2] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 text-center">
@@ -77,11 +72,9 @@
                                             <strong>{{jours[2]}}</strong>
                                         </p>
                                         <div class="progress">
-                                          <div v-if="detail.ranges[1] > '99,9' || detail.ranges[1] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
-
-                                          <div  v-else-if="detail.ranges[1] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
-
-                                          <div  v-else-if="detail.ranges[1] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
+                                          <div v-if="detail.ranges[1] > '99,9' || detail.ranges[1] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
+                                          <div  v-else-if="detail.ranges[1] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
+                                          <div  v-else-if="detail.ranges[1] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
                                         </div>
                                     </div>
                                     <div class="col-lg-3 text-center">
@@ -89,11 +82,9 @@
                                             <strong>{{jours[3]}}</strong>
                                         </p>
                                         <div class="progress">
-                                          <div v-if="detail.ranges[0] > '99,9' || detail.ranges[0] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
-
-                                          <div  v-else-if="detail.ranges[0] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
-
-                                          <div  v-else-if="detail.ranges[0] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
+                                          <div v-if="detail.ranges[0] > '99,9' || detail.ranges[0] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
+                                          <div  v-else-if="detail.ranges[0] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
+                                          <div  v-else-if="detail.ranges[0] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
                                         </div>
                                     </div>
                                 </div>
@@ -124,16 +115,12 @@
                             </div>
                             <div class="card-body text-center global"> 
                                 <p v-if="range == '0,000'">nc</p>
-                                
-
                                 <div v-if="detail.ranges[4] > '99,9' || detail.ranges[4] == '100,000'" class="progress" style="height:70px">
                                   <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[4] + '%'}" v-bind:aria-valuenow="detail.ranges[4]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[4]}} %</strong></div>
                                 </div>
-
                                 <div v-else-if="detail.ranges[4] >'99,6'" class="progress" style="height:70px">
                                   <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[4] + '%'}" v-bind:aria-valuenow="detail.ranges[4]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[4]}} %</strong></div>
                                 </div>
-
                                 <div v-else-if="detail.ranges[4] <'99,6'" class="progress" style="height:70px">
                                   <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[4] + '%'}" v-bind:aria-valuenow="detail.ranges[4]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[4]}} %</strong></div>
                                 </div>
@@ -253,9 +240,7 @@ export default {
                 if("year" in this.$route.params && parseInt(year) != this.$route.params.year)
                     currentDate = parseInt(moment(this.$route.params.year, 'YYYY').endOf('year').format('X'))
 
-
                 let startMonth = parseInt(moment(currentDate, 'X').startOf('month').format('X'))
-
 
                 let startYear = moment(currentDate, 'X').startOf('year').format('X')
                 months.push(moment(currentDate, 'X').locale('fr').format('MMM'))
@@ -311,7 +296,13 @@ export default {
                         vm.allLogs = "empty"
                     }else{
                         vm.allLogs = vm.searchForLongerLog(response.data[i].logs, 2)
-                    }  
+                        vm.allLogs = vm.allLogs.reduce((unique, o) => {
+                            if(!unique.some(obj => obj.label === o.label && obj.value === o.value)) {
+                            unique.push(o);
+                            }
+                            return unique;
+                        },[]);
+                    } 
                     results.push({
                         "name":response.data[i].friendly_name,
                         "status":response.data[i].status,
