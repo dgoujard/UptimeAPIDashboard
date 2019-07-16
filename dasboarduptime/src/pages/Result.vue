@@ -6,7 +6,9 @@
             <p id="nbLine">Nombre de résultats : {{filter.length}}</p>
         </div>
         <PlageHoraire @searchWithHoraire="searchWithHoraire" :custominterval="custom_interval"></PlageHoraire>
-        <Table v-if="results != ''" @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true"></Table>
+        <div class="container table-year">
+            <Table @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true"></Table>
+        </div>
         <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark">
             <a href="#" class="navbar-brand">Réal. Actigraph</a>
         </nav>
@@ -129,7 +131,6 @@ export default {
                         if(ranges[j][i] != 0)
                             arrayElement.push(ranges[j][i])
                     }
-
                     if(arrayElement.length != 0){
                         vm.average.push((arrayElement.reduce(reducer)/arrayElement.length).toFixed(3))
                     }
@@ -150,14 +151,15 @@ export default {
             let vm = this
             vm.results = await vm.getUptimeData()
             vm.filter = vm.results
-            if(vm.search != "")
+            if(vm.search != ""){
                 vm.searchInTab(vm.search)
-            else 
+            } else { 
                 if(typeof vm.$route.params.search !== "undefined")
                 {
                     if(vm.$route.params.search != "")
                         vm.searchInTab(vm.$route.params.search)
                 }
+            }
             vm.getMoyenne()
         },
         getUptimeData: async function(){

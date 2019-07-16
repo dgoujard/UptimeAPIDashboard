@@ -1,6 +1,5 @@
 <template>
     <div class="table">
-        <div class="container table-year">
             <div class="table-responsive">
                 <table class="table-fixed table table-hover table-striped table-lg" id="data">
                     <thead class="table-header">
@@ -13,14 +12,24 @@
                             <th scope="col" @click.prevent="sortBy('cumulSeconde')">Cumule</th>
                             <th scope="col"></th>
                         </tr>
-                        <tr v-if="hasAverage === true" class="MoyenneHeaders" >
+                        <tr v-if="hasAverage == true" class="MoyenneHeaders" >
                             <th v-for="average in average" :key="average.id">{{average}}</th>
                         </tr>  
                     </thead>
-                    <tbody id="results">
+                    <tbody v-if="data == ''">
+                        <tr>
+                            <td colspan="12">
+                                <div class="d-flex justify-content-center">
+                                    <div class="spinner-border" role="status">
+                                        <span class="sr-only">Loading...</span>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tbody v-if="data != ''" id="results">
                         <tr v-for="(result, index) in data" :key="index" @dblclick="displayRow(index)" :class="{'not-visible':!result.isVisible}">
                             <td scope="row" class="name text-left">
-                                
                                 <p v-if="result.status==2 || result.status==0" class="success text-left">
                                     <span v-if="result.status==2" class="fa fa-check-circle" aria-hidden="true"></span>
                                     <strong><router-link :to="{name:'Details', 
@@ -38,7 +47,6 @@
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                                 </p>
                                 <p v-if="result.status==9" class="alert text-left">
-
                                     <span v-if="result.status==9" class="fa fa-exclamation-circle" aria-hidden="true"></span>
                                     <strong><router-link :to="{name:'Details', 
                                         params:{
@@ -94,7 +102,6 @@
                     </tbody>
                 </table>
             </div>
-        </div>
     </div>
 
 </template>
@@ -121,13 +128,14 @@ export default {
     methods: {
         sortBy: function(name) {
             let vm = this
-            if(this.sort === true)
-                vm.$emit('hasSortBy', name)
+            if(this.hasSort){
+                vm.$emit('sortBy', name)
+            }
         }, 
         displayRow: function(index){
             let vm = this
-            if(this.displayRow === true)
-                vm.$emit('hasDisplayRow', index)
+            if(this.displayRow)
+                vm.$emit('displayRow', index)
         }
     }
 }
