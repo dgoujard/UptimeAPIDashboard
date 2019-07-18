@@ -47,7 +47,7 @@
                                             interval:custom_interval,
                                             daysSelected:daysSelected
                                         }
-                                    }" target='_blank'>
+                                    }">
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                                 </p>
                                 <p v-if="result.status==9" class="alert text-left">
@@ -63,7 +63,7 @@
                                             interval:custom_interval,
                                             daysSelected:daysSelected
                                         }   
-                                    }" target='_blank'>
+                                    }">
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                                 </p>
                                 <p v-if="result.status==8" class="danger text-left">
@@ -79,7 +79,7 @@
                                             interval:custom_interval,
                                             daysSelected:daysSelected
                                         }
-                                    }" target='_blank'>
+                                    }">
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                                 </p>
                             </td>

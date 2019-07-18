@@ -206,67 +206,66 @@ export default {
                     "custom_interval":vm.custom_interval,
                     "custom_days_range":vm.daysSelected
                 }
-                console.log(data.custom_interval);
+                if(vm.custom_interval[0] === "0" && vm.custom_interval[1] === "86400"){
+                    data = {
+                        "account":value,
+                        "ranges":vm.range
+                    }
+                }
                 let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
                 //let url = 'http://localhost:3000/siteslogs'
                 await axios.post(url, data).
                 then(function (response) {
-                    console.log(response.data)
-                    if(response.data.length == 0){
-                        setTimeout(function () {
-                            vm.getData()
-                        }, 5000);
-                    } else {
-                        var monitors = response.data
-                        for(var i in monitors){
-                            var logs = monitors[i].logs
-                            const reducer = (accumulator, currentValue) => accumulator + currentValue;
-                            var logsDuration = Array()
-                            for(var j in logs)
-                                if(logs[j].type == 1)
-                                    logsDuration.push(logs[j].duration)
-                            
-                            if(logsDuration.length > 0){
-                                var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
-                                var secondeCumul = logsDuration.reduce(reducer)
-                            }else{ 
-                                var cumul = 0;
-                                var secondeCumul = 0
-                            }
-
-                            let range = monitors[i].custom_uptime_ranges
-                            let ranges = range.split('-').reverse()
-                            let longerLogDown = vm.searchForLongerLog(monitors[i].logs, 1)   
-                            var total = 0;
-                            var numberRange = 0
-                            
-                            for(var k in ranges){
-                                if(ranges[k] !== "0.000"){
-                                    numberRange = numberRange + 1
-                                    total = total + parseFloat(ranges[k])
-                                }
-                            }
-
-                            if(total === 0)
-                                ranges.unshift("0.000")
-                            else 
-                                ranges.unshift((total/numberRange).toFixed(3))
-                            
-                            results.push({
-                                "status":monitors[i].status,
-                                "id":monitors[i].id,
-                                "name":monitors[i].friendly_name,
-                                "ranges": ranges.map(Number),
-                                "cumul":cumul,
-                                "cumulSeconde":secondeCumul,
-                                "longerLogDown":longerLogDown,
-                                "timestampLogdown": longerLogDown[0]["timestamp"],
-                                "url":monitors[i].url,
-                                "isVisible":true
-                            })
-                            vm.getMoyenne()
+                    var monitors = response.data
+                    for(var i in monitors){
+                        var logs = monitors[i].logs
+                        const reducer = (accumulator, currentValue) => accumulator + currentValue;
+                        var logsDuration = Array()
+                        for(var j in logs)
+                            if(logs[j].type == 1)
+                                logsDuration.push(logs[j].duration)
+                        
+                        if(logsDuration.length > 0){
+                            var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
+                            var secondeCumul = logsDuration.reduce(reducer)
+                        }else{ 
+                            var cumul = 0;
+                            var secondeCumul = 0
                         }
+
+                        let range = monitors[i].custom_uptime_ranges
+                        let ranges = range.split('-').reverse()
+                        let longerLogDown = vm.searchForLongerLog(monitors[i].logs, 1)   
+                        var total = 0;
+                        var numberRange = 0
+                        
+                        for(var k in ranges){
+                            if(ranges[k] !== "0.000"){
+                                numberRange = numberRange + 1
+                                total = total + parseFloat(ranges[k])
+                            }
+                        }
+
+                        if(total === 0)
+                            ranges.unshift("0.000")
+                        else 
+                            ranges.unshift((total/numberRange).toFixed(3))
+                        
+                        results.push({
+                            "status":monitors[i].status,
+                            "id":monitors[i].id,
+                            "name":monitors[i].friendly_name,
+                            "ranges": ranges.map(Number),
+                            "cumul":cumul,
+                            "cumulSeconde":secondeCumul,
+                            "longerLogDown":longerLogDown,
+                            "timestampLogdown": longerLogDown[0]["timestamp"],
+                            "url":monitors[i].url,
+                            "isVisible":true
+                        })
+                        vm.getMoyenne()
                     }
+                    
                 })
             });
             

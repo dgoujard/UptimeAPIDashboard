@@ -279,70 +279,65 @@ export default {
             let data = {
                 "site":[parseInt(this.$route.params.id)],
                 "ranges":this.range,
-                "custom_interval":this.custom_interval,
-                "custom_days_range":this.daysSelected
+                "custom_interval":vm.$route.params.interval,
+                "custom_days_range":vm.$route.params.daysSelected
             }
             let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
+            //let url = 'http://localhost:3000/siteslogs'
             axios.post(url, data).
             then(function (response) {
-                if(response.data.length == 0){
-                    setTimeout(function () {
-                        vm.getUptimeData()
-                    }, 5000);
-                } else {
-                    var monitors = response.data[0]
-                    var logs = monitors.logs
-                    const reducer = (accumulator, currentValue) => accumulator + currentValue;
-                    var logsDuration = Array()
-                    for(var j in logs)
-                        if(logs[j].type == 1)
-                            logsDuration.push(logs[j].duration)
+                var monitors = response.data[0]
+                var logs = monitors.logs
+                const reducer = (accumulator, currentValue) => accumulator + currentValue;
+                var logsDuration = Array()
+                for(var j in logs)
+                    if(logs[j].type == 1)
+                        logsDuration.push(logs[j].duration)
 
-                    if(logsDuration.length > 0){
-                        var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
-                        var secondeCumul = logsDuration.reduce(reducer)
-                    }else{ 
-                        var cumul = 0;
-                        var secondeCumul = 0
-                    }
-
-                    let range = monitors.custom_uptime_ranges
-                    let ranges = range.split('-').reverse()
-                    let longerLogDown = vm.searchForLongerLog(monitors.logs, 1)   
-                    var total = 0;
-                    var numberRange = 0
-
-                    for(var k in ranges){
-                        if(ranges[k] !== "0.000"){
-                            numberRange = numberRange + 1
-                            total = total + parseFloat(ranges[k])
-                        }
-                    }
-
-                    if(vm.searchForLongerLog(logs, 2).length == 0){
-                        vm.allLogs = "empty"
-                    }else{
-                        vm.allLogs = vm.searchForLongerLog(logs, 2)
-                    } 
-                    if(total === 0)
-                        ranges.unshift("0.000")
-                    else 
-                        ranges.unshift((total/numberRange).toFixed(3))
-
-                    result.push({
-                        "status":monitors.status,
-                        "id":monitors.id,
-                        "name":monitors.friendly_name,
-                        "ranges": ranges.map(Number),
-                        "cumul":cumul,
-                        "cumulSeconde":secondeCumul,
-                        "logs":vm.allLogs,
-                        "longerLogDown":longerLogDown,
-                        "timestampLogdown": longerLogDown[0]["timestamp"],
-                        "url":monitors.url,
-                        "isVisible":true,
-                    })
+                if(logsDuration.length > 0){
+                    var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
+                    var secondeCumul = logsDuration.reduce(reducer)
+                }else{ 
+                    var cumul = 0;
+                    var secondeCumul = 0
                 }
+
+                let range = monitors.custom_uptime_ranges
+                let ranges = range.split('-').reverse()
+                let longerLogDown = vm.searchForLongerLog(monitors.logs, 1)   
+                var total = 0;
+                var numberRange = 0
+
+                for(var k in ranges){
+                    if(ranges[k] !== "0.000"){
+                        numberRange = numberRange + 1
+                        total = total + parseFloat(ranges[k])
+                    }
+                }
+
+                if(vm.searchForLongerLog(logs, 2).length == 0){
+                    vm.allLogs = "empty"
+                }else{
+                    vm.allLogs = vm.searchForLongerLog(logs, 2)
+                } 
+                if(total === 0)
+                    ranges.unshift("0.000")
+                else 
+                    ranges.unshift((total/numberRange).toFixed(3))
+
+                result.push({
+                    "status":monitors.status,
+                    "id":monitors.id,
+                    "name":monitors.friendly_name,
+                    "ranges": ranges.map(Number),
+                    "cumul":cumul,
+                    "cumulSeconde":secondeCumul,
+                    "logs":vm.allLogs,
+                    "longerLogDown":longerLogDown,
+                    "timestampLogdown": longerLogDown[0]["timestamp"],
+                    "url":monitors.url,
+                    "isVisible":true,
+                })
             });
             vm.filter = result;
         },
@@ -357,32 +352,28 @@ export default {
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected
             }
+            console.log("week: ", data)
             let detail = Array()
             let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
+            //let url = 'http://localhost:3000/siteslogs'
             axios.post(url, data).
             then(function (response) {
-                if(response.data.length == 0){
-                    setTimeout(function () {
-                        vm.getDataUptimeWeek()
-                    }, 5000);
-                } else {
-                    for(var i in response.data){
-                        let logDown
-                        let longerLogDown = vm.searchForLongerLog(response.data[i].logs, 1)
-                        let ranges = ((response.data[i].custom_uptime_ranges.replace(/\./g, ',')).split('-')).reverse()
-                        let rangeW = ((response.data[i].custom_uptime_ranges).split('-')).reverse()
-                        
-                        results.push({
-                            "name":response.data[i].friendly_name,
-                            "status":response.data[i].status,
-                            "ranges":ranges,
-                            "rangesW":rangeW,
-                            "longerLogDown":longerLogDown,
-                            "url":"",
-                            "createdDate": moment(response.data[i].creation_datetime, 'X').locale('fr').format('Do MMMM YYYY, HH:mm:ss')
+                for(var i in response.data){
+                    let logDown
+                    let longerLogDown = vm.searchForLongerLog(response.data[i].logs, 1)
+                    let ranges = ((response.data[i].custom_uptime_ranges.replace(/\./g, ',')).split('-')).reverse()
+                    let rangeW = ((response.data[i].custom_uptime_ranges).split('-')).reverse()
+                    
+                    results.push({
+                        "name":response.data[i].friendly_name,
+                        "status":response.data[i].status,
+                        "ranges":ranges,
+                        "rangesW":rangeW,
+                        "longerLogDown":longerLogDown,
+                        "url":"",
+                        "createdDate": moment(response.data[i].creation_datetime, 'X').locale('fr').format('Do MMMM YYYY, HH:mm:ss')
 
-                        })
-                    }
+                    })
                 }
             })
             vm.details = results;

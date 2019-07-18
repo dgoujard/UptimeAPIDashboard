@@ -10,8 +10,7 @@ class App {
 
     public app: express.Application;
     public routePrv: Routes = new Routes();
-    public mongoUrl: string = 'mongodb://root:aUNdT89bYNkw42A834Hv@217.182.52.55/UptimeDB';
-    //public mongoUrl: string = 'mongodb://localhost/UptimeDB';
+    public mongoUrl: string = 'mongodb://localhost/UptimeDB';
     public updateDataController = new UpdateDataController()
     constructor() {
         this.app = express();

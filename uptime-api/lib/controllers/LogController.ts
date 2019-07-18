@@ -30,6 +30,7 @@ export class LogController{
         let Logs = Log.find({}).populate('Site').populate('Type').exec();
         let Sites =  Site.find().populate('Account').exec();
         let allSites = Array();
+        let momentTime = parseInt(moment().format('X'));
         Promise.all([Logs, Sites]).then(([logs, sites])=>{
             var logArray = Array();
             logs.forEach(element => {
@@ -58,16 +59,31 @@ export class LogController{
                             range[0] = element.createDatetime;
                         }
                         let rangeDuration = this.getDuration(parseInt(range[0]), parseInt(range[1]), custom_days_range, custom_interval)
-                        logsSite.forEach(el => {
-                            if(el.datetime > range[0] && el.datetime < range[1] && el.type === 1){
-                                durationLog = durationLog + el.duration
-                                allLogs.push(el)
+                        logsSite.forEach((el, idx, array) => {
+                            if (idx === 0 &&  el.datetime < parseInt(range[0]) && el.type === 1 ){ 
+                                durationLog = null
+                            } else {
+                                if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[1]) && el.type === 1){
+                                    durationLog = null
+                                } else {
+                                    if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[0]) && el.type === 1){
+                                        let duration = el.datetime + el.duration - parseInt(range[0]); 
+                                        durationLog = durationLog + duration
+                                    }else if(el.datetime >= parseInt(range[0]) && el.datetime <= parseInt(range[1]) && el.type === 1){
+                                        let duration = el.duration
+                                        if(el.datetime + el.duration > parseInt(range[1]))
+                                            duration = parseInt(range[1]) - el.datetime
+                                        
+                                        durationLog = durationLog + duration
+                                        allLogs.push(el)
+                                    }
+                                }
                             }
+
                         });
                         if(parseInt(range[1]) < element.createDatetime) {
                             durationLog = null
                         }
-                        
                         if(durationLog == null){
                             uptime.push("0.000")
                         } else if( durationLog === 0) {
@@ -106,6 +122,8 @@ export class LogController{
     
     getLogsInRange(logs:Array<any>, forbidenDay: Array<string>, intervals: Array<string>){
         let allLogs = Array()
+        let momentTime = parseInt(moment().format('X'));
+
         if(intervals.length > 0 || forbidenDay.length) {
             logs.forEach(el => {
                 if(el.type === 1) {
@@ -120,6 +138,10 @@ export class LogController{
                             startInterval = startDay + parseInt(intervals[0])
                             endInterval = startDay + parseInt(intervals[1])
                         }
+                        if(endInterval > momentTime) {
+                            endInterval = momentTime
+                        }
+
                         if(startDay <= startLog)
                             startDay = startLog
                         let arrayInterval = Array(startInterval, endInterval, startDay, endLog)
@@ -127,7 +149,7 @@ export class LogController{
                             duration = 0
                         else
                             duration = (Math.max(...arrayInterval) - Math.min(...arrayInterval)) - (Math.max(startInterval, startDay) - Math.min(startInterval, startDay)) - (Math.max(endInterval, endLog) - Math.min(endInterval, endLog))
-    
+                        
                         if(forbidenDay.length > 0 && forbidenDay.indexOf(moment(startInterval, 'X').endOf('day').locale('en').format('dddd').toLowerCase()) > -1){
                             duration = 0
                         }
