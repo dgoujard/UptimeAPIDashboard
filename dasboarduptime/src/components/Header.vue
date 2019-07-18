@@ -2,7 +2,16 @@
     <div class="header">
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark tablesortable" role="navigation">
             <div class="container">
-                <router-link :to="{name:'Result'}"><a class="navbar-brand" href="#">Disponibilité - Statistiques</a></router-link>
+                <router-link v-if="hasSearch == false" :to="{name:'Result', params:{
+                    id:$route.params.idAccount,
+                    key:$route.params.key,
+                    year: $route.params.date,
+                    search: $route.params.search,
+                    interval:$route.params.interval,
+                    daysSelected:$route.params.daysSelected
+                }}"><a class="navbar-brand" href="#">Disponibilité - Statistiques</a></router-link>
+                <router-link v-if="hasSearch" :to="{name:'Result'}"><a class="navbar-brand" href="#">Disponibilité - Statistiques</a></router-link>
+
                 <template v-if="hasSearch == true">
                     <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                         <span class="navbar-toggler-icon"></span>

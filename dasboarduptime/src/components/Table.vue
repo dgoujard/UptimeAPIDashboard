@@ -7,14 +7,18 @@
                             <th scope="col" @click.prevent="sortBy('name')">Nom</th>
                             <th scope="col" @click.prevent="sortBy(0)">Dispo. globale</th>
                             <th scope="col" v-for="(month, index) in months" :key="month.id" @click.prevent="sortBy(index+1)">{{month}}</th>
-                            <th scope="col">Plus longue indispo</th>
-                            <th scope="col" @click.prevent="sortBy('timestampLogdown')">Durée</th>
-                            <th scope="col" @click.prevent="sortBy('cumulSeconde')">Cumule</th>
-                            <th scope="col"></th>
+                            <template v-if="hasIndispoInfo">
+                                <th scope="col">Plus longue indispo</th>
+                                <th scope="col" @click.prevent="sortBy('timestampLogdown')">Durée</th>
+                                <th scope="col" @click.prevent="sortBy('cumulSeconde')">Cumule</th>
+                                <th scope="col"></th>
+                            </template>
                         </tr>
-                        <tr v-if="hasAverage == true" class="MoyenneHeaders" >
-                            <th v-for="average in average" :key="average.id">{{average}}</th>
-                        </tr>  
+                        <template v-if="data != ''">
+                            <tr v-if="hasAverage == true" class="MoyenneHeaders" >
+                                <th v-for="average in average" :key="average.id">{{average}}</th>
+                            </tr> 
+                        </template> 
                     </thead>
                     <tbody v-if="data == ''">
                         <tr>
@@ -43,7 +47,7 @@
                                             interval:custom_interval,
                                             daysSelected:daysSelected
                                         }
-                                    }">
+                                    }" target='_blank'>
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                                 </p>
                                 <p v-if="result.status==9" class="alert text-left">
@@ -59,7 +63,7 @@
                                             interval:custom_interval,
                                             daysSelected:daysSelected
                                         }   
-                                    }">
+                                    }" target='_blank'>
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                                 </p>
                                 <p v-if="result.status==8" class="danger text-left">
@@ -75,7 +79,7 @@
                                             interval:custom_interval,
                                             daysSelected:daysSelected
                                         }
-                                    }">
+                                    }" target='_blank'>
                                     <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                                 </p>
                             </td>
@@ -85,19 +89,21 @@
                                 <p v-else-if="range > 99.6" class="alert">{{range | formatNumber}}</p>
                                 <p v-else-if="range < 99.6" class="danger">{{range | formatNumber}}</p>
                             </td>
-                            <td class="logdownDate" v-for="logdown in result.longerLogDown " :key="logdown.id">
-                                <p v-if="logdown.date != 0">{{logdown.date}}</p>
-                            </td>
-                            <td class="logdownDuration" v-for="logdown in result.longerLogDown " :key="logdown.id">
-                                <p class="timestamp" hidden>{{logdown.timestamp}}</p>
-                                {{logdown.duration}}
-                            </td>
-                            <td class="">
-                                {{result.cumul}}
-                            </td>
-                            <td class="url">
-                                <a tag="button" data-toggle="tooltip" data-placement="top" title="Voir le site"  class="btn btn-primary" target="_blank" :href="result.url"><span class="fas fa-external-link-alt" aria-hidden="true"></span></a>
-                            </td>
+                            <template v-if="hasIndispoInfo">
+                                <td class="logdownDate" v-for="logdown in result.longerLogDown " :key="logdown.id">
+                                    <p v-if="logdown.date != 0">{{logdown.date}}</p>
+                                </td>
+                                <td class="logdownDuration" v-for="logdown in result.longerLogDown " :key="logdown.id">
+                                    <p class="timestamp" hidden>{{logdown.timestamp}}</p>
+                                    {{logdown.duration}}
+                                </td>
+                                <td class="">
+                                    {{result.cumul}}
+                                </td>
+                                <td class="url">
+                                    <a tag="button" data-toggle="tooltip" data-placement="top" title="Voir le site"  class="btn btn-primary" target="_blank" :href="result.url"><span class="fas fa-external-link-alt" aria-hidden="true"></span></a>
+                                </td>
+                            </template>
                         </tr>
                     </tbody>
                 </table>
@@ -107,7 +113,7 @@
 </template>
 <script>
 export default {
-    props: ['data', 'months', 'average', 'keyAccount', 'date', 'search', 'idAccount','custom_interval', 'daysSelected', 'hasSort', 'hasDisplayRow', 'hasAverage'],
+    props: ['data', 'months', 'average', 'keyAccount', 'date', 'search', 'idAccount','custom_interval', 'daysSelected', 'hasSort', 'hasDisplayRow', 'hasAverage', 'hasIndispoInfo'],
     name : 'Table',
     data(){
         return{

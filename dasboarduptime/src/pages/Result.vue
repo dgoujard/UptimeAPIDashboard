@@ -1,13 +1,15 @@
 <template>
-    <div id="table">
+    <div id="result">
         <Header @searchInTab="searchInTab" @downloadCsv="downloadCsv" :hasSearch="hasSearch" :keyRoute="key" :date="date" :searchinput="search" :accounts="accounts" :idAccount="idAccount"></Header>
-        <div v-if="search != ''" class="text-center itemSearch" style="color:#e9ecef">
-            <p id="text">Recherche : {{search}}</p>
-            <p id="nbLine">Nombre de résultats : {{filter.length}}</p>
+        <div class="container">
+            <div v-if="search != ''" class="mb-5 bg-transparent text-dark text-center">
+                <p id="text">Recherche : {{search}}</p>
+                <p id="nbLine">Nombre de résultats : {{filter.length}}</p>
+            </div>
         </div>
         <PlageHoraire @searchWithHoraire="searchWithHoraire" :custominterval="custom_interval"></PlageHoraire>
         <div class="container table-year">
-            <Table @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true"></Table>
+            <Table @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true" :hasIndispoInfo="true"></Table>
         </div>
         <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark">
             <a href="#" class="navbar-brand">Réal. Actigraph</a>
@@ -160,7 +162,6 @@ export default {
                         vm.searchInTab(vm.$route.params.search)
                 }
             }
-            vm.getMoyenne()
         },
         getUptimeData: async function(){
             let vm = this
@@ -205,60 +206,70 @@ export default {
                     "custom_interval":vm.custom_interval,
                     "custom_days_range":vm.daysSelected
                 }
+                console.log(data.custom_interval);
                 let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
                 //let url = 'http://localhost:3000/siteslogs'
                 await axios.post(url, data).
                 then(function (response) {
-                    var monitors = response.data
-                    for(var i in monitors){
-                        var logs = monitors[i].logs
-                        const reducer = (accumulator, currentValue) => accumulator + currentValue;
-                        var logsDuration = Array()
-                        for(var j in logs)
-                            if(logs[j].type == 1)
-                                logsDuration.push(logs[j].duration)
-                        
-                        if(logsDuration.length > 0){
-                            var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
-                            var secondeCumul = logsDuration.reduce(reducer)
-                        }else{ 
-                            var cumul = 0;
-                            var secondeCumul = 0
-                        }
-
-                        let range = monitors[i].custom_uptime_ranges
-                        let ranges = range.split('-').reverse()
-                        let longerLogDown = vm.searchForLongerLog(monitors[i].logs, 1)   
-                        var total = 0;
-                        var numberRange = 0
-                        
-                        for(var k in ranges){
-                            if(ranges[k] !== "0.000"){
-                                numberRange = numberRange + 1
-                                total = total + parseFloat(ranges[k])
+                    console.log(response.data)
+                    if(response.data.length == 0){
+                        setTimeout(function () {
+                            vm.getData()
+                        }, 5000);
+                    } else {
+                        var monitors = response.data
+                        for(var i in monitors){
+                            var logs = monitors[i].logs
+                            const reducer = (accumulator, currentValue) => accumulator + currentValue;
+                            var logsDuration = Array()
+                            for(var j in logs)
+                                if(logs[j].type == 1)
+                                    logsDuration.push(logs[j].duration)
+                            
+                            if(logsDuration.length > 0){
+                                var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
+                                var secondeCumul = logsDuration.reduce(reducer)
+                            }else{ 
+                                var cumul = 0;
+                                var secondeCumul = 0
                             }
-                        }
 
-                        if(total === 0)
-                            ranges.unshift("0.000")
-                        else 
-                            ranges.unshift((total/numberRange).toFixed(3))
-                        
-                        results.push({
-                            "status":monitors[i].status,
-                            "id":monitors[i].id,
-                            "name":monitors[i].friendly_name,
-                            "ranges": ranges.map(Number),
-                            "cumul":cumul,
-                            "cumulSeconde":secondeCumul,
-                            "longerLogDown":longerLogDown,
-                            "timestampLogdown": longerLogDown[0]["timestamp"],
-                            "url":monitors[i].url,
-                            "isVisible":true
-                        })
+                            let range = monitors[i].custom_uptime_ranges
+                            let ranges = range.split('-').reverse()
+                            let longerLogDown = vm.searchForLongerLog(monitors[i].logs, 1)   
+                            var total = 0;
+                            var numberRange = 0
+                            
+                            for(var k in ranges){
+                                if(ranges[k] !== "0.000"){
+                                    numberRange = numberRange + 1
+                                    total = total + parseFloat(ranges[k])
+                                }
+                            }
+
+                            if(total === 0)
+                                ranges.unshift("0.000")
+                            else 
+                                ranges.unshift((total/numberRange).toFixed(3))
+                            
+                            results.push({
+                                "status":monitors[i].status,
+                                "id":monitors[i].id,
+                                "name":monitors[i].friendly_name,
+                                "ranges": ranges.map(Number),
+                                "cumul":cumul,
+                                "cumulSeconde":secondeCumul,
+                                "longerLogDown":longerLogDown,
+                                "timestampLogdown": longerLogDown[0]["timestamp"],
+                                "url":monitors[i].url,
+                                "isVisible":true
+                            })
+                            vm.getMoyenne()
+                        }
                     }
                 })
             });
+            
             return results;
         },
         downloadCsv: function(e){
@@ -413,10 +424,6 @@ export default {
 
 </script>
 <style>
-.date {
-    color: #fff;
-    font-size: 1.25rem
-}
 
 .MoyenneHeaders {
     line-height: 2%;

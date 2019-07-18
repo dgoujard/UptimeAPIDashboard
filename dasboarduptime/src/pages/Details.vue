@@ -1,226 +1,152 @@
 <template>
     <div>
         <Header :hasSearch="hasSearch"></Header>
-        <div class="container">
-            <div class="card border-primary card-background" v-if="details != ''">
-            <div class="Detail"  v-for="detail in details " :key="detail.id" >
-                <div class="col-lg-12">
-                    <div class="row entete card-header">
-                        <div class="col-md-1 icondispo">
-                            <div v-if="detail.status==2"><span class="fa fa-check-circle" aria-hidden="true"></span></div>
-                            <div v-if="detail.status==9"><span class="fa fa-exclamation-circle" aria-hidden="true"></span></div>
-                            <div v-if="detail.status==8"><span class="fa fa-times-circle" aria-hidden="true"></span></div>
-                        </div>
-                        <div class="col-md-9">
-                            <div class="title">
-                                <h1>
-                                    {{detail.name}}
-                                </h1>
-                                <p class="mb-0">
-                                    {{detail.createdDate}}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <router-link :to="{name:$route.params.from.name, 
-                                params:{
-                                    id:$route.params.idAccount,
-                                    key:$route.params.key,
-                                    year: $route.params.date,
-                                    search: $route.params.search,
-                                    interval:$route.params.interval,
-                                    daysSelected:$route.params.daysSelected
-                                }
-                            }" tag="button" class="btn btn-lg btn-secondary btn-block">Retour à la liste
-                            </router-link> 
-                            <div class="mt-1">
-                                <div v-for="logs in detail.longerLogDown" :key="logs.id">
-                                    <p v-if="logs.date == '0'">
-                                        <strong>Aucune</strong>
-                                    </p>
-                                    <p v-else class="log"> 
-                                        <strong>{{logs.date}} : {{logs.duration}}</strong>
-                                    </p>
-                                </div>
-                            </div>   
-                        </div>
-                    </div>
-                </div>
-
-                <div v-if="detail != ''" class="card-body">
-                <div class="row">
+        <div class="container" v-if="details != ''">
+            <div class="card border-primary card-background">
+                <div class="Detail"  v-for="detail in details " :key="detail.id" >
                     <div class="col-lg-12">
-                        <div class="table-year">
-                            <Table :months="months" :data="filter" :average="[]" :keyAccount="$route.params.key" :date="date" :search="''" :idAccount="$route.params.idAccount" :custom_interval="$route.params.interval" :daysSelected="$route.params.daysSelected" :hasSort="false" :hasDisplayRow="false" :hasAverage="false" :hasSearch="false"></Table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-9">
-                        <div class="card border-primary">
-                            <div class="card-header">
-                                <div class="col-xs-9 text-center">
-                                    <strong>Disponibilité sur les 4 dernières semaines en %</strong>
+                        <div class="row entete card-header">
+                            <div class="col-md-12">
+                                <div class="title">
+                                    <h1  v-if="filter != ''" class="text-center">{{detail.name}} : Disponibilité globale : 
+                                        <small v-if="filter[0].ranges[0] == 0.000">nc</small>
+                                        <small class="p-3 mb-2 bg-success" v-if="filter[0].ranges[0] > 99.9 || filter[0].ranges[0] == 100.000">{{filter[0].ranges[0] | formatNumber}} % </small>
+                                        <small class="p-3 mb-2 bg-warning" v-else-if="filter[0].ranges[0] >99.6">{{filter[0].ranges[0] | formatNumber}} %</small>
+                                        <small class="p-3 mb-2 bg-danger" v-else-if="filter[0].ranges[0] <99.6">{{filter[0].ranges[0] | formatNumber}} %</small>
+                                    </h1>
                                 </div>
                             </div>
-                            <div class="card-body text-center">
-                                <div class="row">
-                                    <div class="col-lg-3 text-center">
-                                        <p class="dateranges">
-                                            <strong>{{jours[0]}}</strong>
-                                        </p>
-                                        <div class="progress">
-                                          <div v-if="detail.ranges[3] > '99,9' || detail.ranges[3] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[3] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[3] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
+                        </div>
+                    </div>
+                    
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="table-year">
+                                    <Table :months="months" :data="filter" :average="[]" :keyAccount="$route.params.key" :date="date" :search="''" :idAccount="$route.params.idAccount" :custom_interval="$route.params.interval" :daysSelected="$route.params.daysSelected" :hasSort="false" :hasDisplayRow="false" :hasAverage="false" :hasSearch="false" :hasIndispoInfo="false"></Table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card border-primary">
+                                    <div class="card-header">
+                                        <div class="col-xs-9 text-center">
+                                            <strong>Disponibilité sur les 4 dernières semaines en %</strong>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 text-center">
-                                        <p class="dateranges">
-                                            <strong>{{jours[1]}}</strong>
-                                        </p>
-                                        <div class="progress">
-                                          <div v-if="detail.ranges[2] > '99,9' || detail.ranges[2] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[2] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[2] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
+                                    <div class="card-body text-center">
+                                        <div class="row">
+                                            <div class="col-lg-3 text-center">
+                                                <p class="dateranges">
+                                                    <strong>{{jours[0]}}</strong>
+                                                </p>
+                                                <div class="progress">
+                                                <div v-if="detail.ranges[3] > '99,9' || detail.ranges[3] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[3] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[3] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[3] + '%'}"  v-bind:aria-valuenow="detail.ranges[3]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[3]}} %</strong></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 text-center">
+                                                <p class="dateranges">
+                                                    <strong>{{jours[1]}}</strong>
+                                                </p>
+                                                <div class="progress">
+                                                <div v-if="detail.ranges[2] > '99,9' || detail.ranges[2] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[2] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[2] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[2] + '%'}"  v-bind:aria-valuenow="detail.ranges[2]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[2]}} %</strong></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 text-center">
+                                                <p class="dateranges">
+                                                    <strong>{{jours[2]}}</strong>
+                                                </p>
+                                                <div class="progress">
+                                                <div v-if="detail.ranges[1] > '99,9' || detail.ranges[1] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[1] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[1] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-3 text-center">
+                                                <p class="dateranges">
+                                                    <strong>{{jours[3]}}</strong>
+                                                </p>
+                                                <div class="progress">
+                                                <div v-if="detail.ranges[0] > '99,9' || detail.ranges[0] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[0] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
+                                                <div  v-else-if="detail.ranges[0] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 text-center">
-                                        <p class="dateranges">
-                                            <strong>{{jours[2]}}</strong>
-                                        </p>
-                                        <div class="progress">
-                                          <div v-if="detail.ranges[1] > '99,9' || detail.ranges[1] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[1] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[1] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[1] + '%'}"  v-bind:aria-valuenow="detail.ranges[1]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[1]}} %</strong></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="container-fluid" v-if="filter != ''">
+                                <div v-if="allLogs == 'empty'" class="p-3 mb-2 bg-success text-white text-center"><h2>0 indisponibilité</h2></div>
+                                <div v-else-if="filter[0].ranges[0] > 99.9 || filter[0].ranges[0] == 100.000" class="p-3 mb-2 bg-success text-white text-center"><h2>{{allLogs.length}} indisponibilités - {{filter[0].cumul}}</h2></div>
+                                <div v-else-if="filter[0].ranges[0] >99.6" class="p-3 mb-2 bg-warning text-white text-center"><h2>{{allLogs.length}} indisponibilités - {{filter[0].cumul}}</h2></div>
+                                <div v-else-if="filter[0].ranges[0] <99.6" class="p-3 mb-2 bg-danger text-white text-center"><h2>{{allLogs.length}} indisponibilités - {{filter[0].cumul}}</h2></div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card border-primary" v-if="filter != ''">
+                                    <div class="card-header">
+                                        <div v-for="logs in filter[0].longerLogDown" :key="logs.id" class="col-xs-9 text-center">
+                                            <strong v-if="logs.date == '0'">Aucune indisponibilité</strong>
+                                            <strong v-else>Plus longue indisponibilité : {{logs.date}} à {{logs.hour}} pendant {{logs.duration}} / {{logs.reason.detail}}</strong>
                                         </div>
                                     </div>
-                                    <div class="col-lg-3 text-center">
-                                        <p class="dateranges">
-                                            <strong>{{jours[3]}}</strong>
-                                        </p>
-                                        <div class="progress">
-                                          <div v-if="detail.ranges[0] > '99,9' || detail.ranges[0] == '100,000'" class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[0] >'99,6'" class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
-                                          <div  v-else-if="detail.ranges[0] <'99,6'" class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':detail.rangesW[0] + '%'}"  v-bind:aria-valuenow="detail.ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{detail.ranges[0]}} %</strong></div>
+                                    <div class="card-body text-center lastlogs">
+                                        <div v-if="filter[0].logs == 'empty'">
+                                            <p>Aucune</p>
+                                        </div>
+                                        <div v-else>
+                                            <table class="table table-hover table-striped table-fixed table-sm" id="tableLogs">
+                                                <thead>
+                                                    <th>Date</th>
+                                                    <th>Heure</th>
+                                                    <th>Raison</th>
+                                                    <th>Durée</th>
+                                                </thead>
+                                                <tbody >
+                                                    <tr v-for="logs in filter[0].logs " :key="logs.id">
+                                                        <td :id="logs.datetime">
+                                                            {{logs.date}}
+                                                        </td>
+                                                        <td :id="logs.datetime">
+                                                            {{logs.hour}}
+                                                        </td>
+                                                        <td :id="logs.datetime">
+                                                            {{logs.reason.detail}}
+                                                        </td>
+                                                        <td :id="logs.timestamp">
+                                                            {{logs.duration}}
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                                <tbody v-if="filter == ''">
+                                                    <tr>
+                                                        <td colspan="12">
+                                                            <div class="d-flex justify-content-center">
+                                                                <div class="spinner-border" role="status">
+                                                                    <span class="sr-only">Loading...</span>
+                                                                </div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-3">
-                        <div class="card border-primary total">
-                            <div class="card-header">
-                                <div class="col-xs-9 text-center ">
-                                    <strong>Total des indisponibilités sur l'année</strong>
-                                </div>
-                            </div>
-                            <div v-if="filter != ''" class="card-body text-center">
-                                <span v-if="allLogs == 'empty'" class="badge badge-success">0</span>
-                                <span v-else class="badge badge-dark">{{allLogs.length}}</span>
-                                <div  class="card-body text-center global"> 
-                                    <p v-if="filter[0].ranges[0] == 0.000">nc</p>
-                                    <div v-if="filter[0].ranges[0] > 99.9 || filter[0].ranges[0] == 100.000" class="progress" style="height:70px">
-                                        <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':filter[0].ranges[0] + '%'}" v-bind:aria-valuenow="filter[0].ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{filter[0].ranges[0] | formatNumber}} %</strong></div>
-                                    </div>
-                                    <div v-else-if="c.ranges[0] >99.6" class="progress" style="height:70px">
-                                        <div class="progress-bar bg-warning progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':filter[0].ranges[0] + '%'}" v-bind:aria-valuenow="filter[0].ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{filter[0].ranges[0] | formatNumber}} %</strong></div>
-                                    </div>
-                                    <div v-else-if="filter[0].ranges[0] <99.6" class="progress" style="height:70px">
-                                        <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" role="progressbar" v-bind:style="{'width':filter[0].ranges[0] + '%'}" v-bind:aria-valuenow="filter[0].ranges[0]" aria-valuemin="0" aria-valuemax="100"><strong>{{filter[0].ranges[0] | formatNumber}} %</strong></div>
-                                    </div>
-                                </div>
-                                <p  class="mt-3">{{filter[0].cumul}}</p>
-                            </div>
-                            <div v-if="filter == ''" class="card-body text-center">
-                                <div class="d-flex justify-content-center">
-                                    <div class="spinner-border" role="status">
-                                        <span class="sr-only">Loading...</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-8">
-                        <div class="card border-primary">
-                            <div class="card-header">
-                                <div class="col-xs-9 text-center">
-                                     <strong>Toutes les indisponibilités</strong>
-                                </div>
-                            </div>
-                            <div class="card-body text-center lastlogs">
-                                <div v-if="detail.logs == 'empty'">
-                                    <p>
-                                        Aucune
-                                    </p>
-                                </div>
-                                <div v-else>
-                                    <table class="table table-hover table-striped table-fixed table-sm" id="tableLogs">
-                                        <thead>
-                                            <th>Date</th>
-                                            <th>Heure</th>
-                                            <th>Raison</th>
-                                            <th>Durée</th>
-                                        </thead>
-                                        <tbody v-if="filter != ''">
-                                            <tr v-for="logs in filter[0].logs " :key="logs.id">
-                                                <td :id="logs.datetime">
-                                                    {{logs.date}}
-                                                </td>
-                                                <td :id="logs.datetime">
-                                                    {{logs.hour}}
-                                                </td>
-                                                <td :id="logs.datetime">
-                                                    {{logs.reason.detail}}
-                                                </td>
-                                                <td :id="logs.timestamp">
-                                                    {{logs.duration}}
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                        <tbody v-if="filter == ''">
-                                            <tr>
-                                                <td colspan="12">
-                                                    <div class="d-flex justify-content-center">
-                                                        <div class="spinner-border" role="status">
-                                                            <span class="sr-only">Loading...</span>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4">
-                        <div class="card border-primary">
-                            <div class="card-header">
-                                <div class="col-xs-9 text-center">
-                                     <strong>Plus longue indisponibilité </strong>
-                                </div>
-                            </div>
-                            <div class="card-body text-center ">
-                                <div v-for="logs in detail.longerLogDown" :key="logs.id">
-                                    <p v-if="logs.date == '0'">
-                                        Aucune
-                                    </p>
-                                    <p v-else class="log"> 
-                                        {{logs.date}} : {{logs.duration}}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
                 </div>
             </div>
-        </div>
         </div>
     </div>
 </template>
@@ -344,8 +270,8 @@ export default {
     methods : {
         getData: async function(){
             let vm = this
-            vm.details = await vm.getDataUptimeWeek()
-            vm.filter = await vm.getUptimeData()
+            await vm.getUptimeData()
+            await vm.getDataUptimeWeek()
         },
         getUptimeData: async function(){
             let result = []
@@ -359,62 +285,66 @@ export default {
             let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
             axios.post(url, data).
             then(function (response) {
-                var monitors = response.data[0]
-                var logs = monitors.logs
-                const reducer = (accumulator, currentValue) => accumulator + currentValue;
-                var logsDuration = Array()
-                for(var j in logs)
-                    if(logs[j].type == 1)
-                        logsDuration.push(logs[j].duration)
+                if(response.data.length == 0){
+                    setTimeout(function () {
+                        vm.getUptimeData()
+                    }, 5000);
+                } else {
+                    var monitors = response.data[0]
+                    var logs = monitors.logs
+                    const reducer = (accumulator, currentValue) => accumulator + currentValue;
+                    var logsDuration = Array()
+                    for(var j in logs)
+                        if(logs[j].type == 1)
+                            logsDuration.push(logs[j].duration)
 
-                if(logsDuration.length > 0){
-                    var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
-                    var secondeCumul = logsDuration.reduce(reducer)
-                }else{ 
-                    var cumul = 0;
-                    var secondeCumul = 0
-                }
-
-                let range = monitors.custom_uptime_ranges
-                let ranges = range.split('-').reverse()
-                let longerLogDown = vm.searchForLongerLog(monitors.logs, 1)   
-                var total = 0;
-                var numberRange = 0
-
-                for(var k in ranges){
-                    if(ranges[k] !== "0.000"){
-                        numberRange = numberRange + 1
-                        total = total + parseFloat(ranges[k])
+                    if(logsDuration.length > 0){
+                        var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
+                        var secondeCumul = logsDuration.reduce(reducer)
+                    }else{ 
+                        var cumul = 0;
+                        var secondeCumul = 0
                     }
+
+                    let range = monitors.custom_uptime_ranges
+                    let ranges = range.split('-').reverse()
+                    let longerLogDown = vm.searchForLongerLog(monitors.logs, 1)   
+                    var total = 0;
+                    var numberRange = 0
+
+                    for(var k in ranges){
+                        if(ranges[k] !== "0.000"){
+                            numberRange = numberRange + 1
+                            total = total + parseFloat(ranges[k])
+                        }
+                    }
+
+                    if(vm.searchForLongerLog(logs, 2).length == 0){
+                        vm.allLogs = "empty"
+                    }else{
+                        vm.allLogs = vm.searchForLongerLog(logs, 2)
+                    } 
+                    if(total === 0)
+                        ranges.unshift("0.000")
+                    else 
+                        ranges.unshift((total/numberRange).toFixed(3))
+
+                    result.push({
+                        "status":monitors.status,
+                        "id":monitors.id,
+                        "name":monitors.friendly_name,
+                        "ranges": ranges.map(Number),
+                        "cumul":cumul,
+                        "cumulSeconde":secondeCumul,
+                        "logs":vm.allLogs,
+                        "longerLogDown":longerLogDown,
+                        "timestampLogdown": longerLogDown[0]["timestamp"],
+                        "url":monitors.url,
+                        "isVisible":true,
+                    })
                 }
-
-                if(vm.searchForLongerLog(logs, 2).length == 0){
-                    vm.allLogs = "empty"
-                }else{
-                    vm.allLogs = vm.searchForLongerLog(logs, 2)
-                } 
-                if(total === 0)
-                    ranges.unshift("0.000")
-                else 
-                    ranges.unshift((total/numberRange).toFixed(3))
-
-                result.push({
-                    "status":monitors.status,
-                    "id":monitors.id,
-                    "name":monitors.friendly_name,
-                    "ranges": ranges.map(Number),
-                    "cumul":cumul,
-                    "cumulSeconde":secondeCumul,
-                    "logs":vm.allLogs,
-                    "longerLogDown":longerLogDown,
-                    "timestampLogdown": longerLogDown[0]["timestamp"],
-                    "url":monitors.url,
-                    "isVisible":true,
-                })
             });
-
-            return result;
-
+            vm.filter = result;
         },
         getDataUptimeWeek: async function(){
             let vm = this
@@ -431,30 +361,37 @@ export default {
             let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
             axios.post(url, data).
             then(function (response) {
-                for(var i in response.data){
-                    let logDown
-                    let longerLogDown = vm.searchForLongerLog(response.data[i].logs, 1)
-                    let ranges = ((response.data[i].custom_uptime_ranges.replace(/\./g, ',')).split('-')).reverse()
-                    let rangeW = ((response.data[i].custom_uptime_ranges).split('-')).reverse()
-                    
-                    results.push({
-                        "name":response.data[i].friendly_name,
-                        "status":response.data[i].status,
-                        "ranges":ranges,
-                        "rangesW":rangeW,
-                        "longerLogDown":longerLogDown,
-                        "url":"",
-                        "createdDate": moment(response.data[i].creation_datetime, 'X').locale('fr').format('Do MMMM YYYY, HH:mm:ss')
+                if(response.data.length == 0){
+                    setTimeout(function () {
+                        vm.getDataUptimeWeek()
+                    }, 5000);
+                } else {
+                    for(var i in response.data){
+                        let logDown
+                        let longerLogDown = vm.searchForLongerLog(response.data[i].logs, 1)
+                        let ranges = ((response.data[i].custom_uptime_ranges.replace(/\./g, ',')).split('-')).reverse()
+                        let rangeW = ((response.data[i].custom_uptime_ranges).split('-')).reverse()
+                        
+                        results.push({
+                            "name":response.data[i].friendly_name,
+                            "status":response.data[i].status,
+                            "ranges":ranges,
+                            "rangesW":rangeW,
+                            "longerLogDown":longerLogDown,
+                            "url":"",
+                            "createdDate": moment(response.data[i].creation_datetime, 'X').locale('fr').format('Do MMMM YYYY, HH:mm:ss')
 
-                    })
+                        })
+                    }
                 }
             })
-            return results;
+            vm.details = results;
         },
         searchForLongerLog : function (log, mode){
             let date = 0
             let hour = 0
             let duration = 0
+            let reason
             let logs = Array()
             let logsDown = Array()
             let maxLogDown = Array()    
@@ -466,13 +403,14 @@ export default {
             for (var i in logs){
                 logsDown.push({"date": moment(logs[i].datetime, 'X').locale('fr').format('L'),"datetime":logs[i].datetime, "hour": moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss'), "reason":logs[i].reason, "duration":this.convertSecondIntoTime(logs[i].duration), "timestamp":logs[i].duration} )
                 if (logs[i].duration>duration){
-                    date = moment(logs[i].datetime, 'X').locale('fr').format('L')
+                    date = moment(logs[i].datetime, 'X').locale('fr').format('dddd L')
                     hour = moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss')
                     duration = logs[i].duration
+                    reason = logs[i].reason
                 }
             }
             
-            maxLogDown.push({"date":date, "hour":hour, "duration":this.convertSecondIntoTime(duration), "timestamp":duration})
+            maxLogDown.push({"date":date, "hour":hour, "reason":reason,  "duration":this.convertSecondIntoTime(duration), "timestamp":duration})
             if(mode == 1)
                 return maxLogDown
             else
@@ -499,3 +437,10 @@ export default {
     }
 }
 </script>
+
+<style>
+.lastlogs {
+    max-height: none !important;
+}
+</style>
+

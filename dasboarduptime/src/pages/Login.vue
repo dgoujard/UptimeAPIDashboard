@@ -36,8 +36,3 @@ export default {
 
 }
 </script>
-<style>
-  label {
-    color : #FFF
-  }
-</style>
