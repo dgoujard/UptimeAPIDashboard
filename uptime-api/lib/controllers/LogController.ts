@@ -3,7 +3,8 @@ import { Request, Response } from 'express';
 import { SiteSchema } from '../models/SiteModel';
 import { LogSchema } from '../models/LogModel';
 
-import * as moment from 'moment/moment';
+//import * as moment from 'moment/moment';
+import * as moment from 'moment-timezone';
 
 const Log = mongoose.model('Log', LogSchema);
 const Site = mongoose.model('Sites', SiteSchema);
@@ -30,7 +31,7 @@ export class LogController{
         let Logs = Log.find({}).populate('Site').populate('Type').exec();
         let Sites =  Site.find().populate('Account').exec();
         let allSites = Array();
-        let momentTime = parseInt(moment().format('X'));
+        let momentTime = parseInt(moment().tz('Europe/Paris').format('X'));
         Promise.all([Logs, Sites]).then(([logs, sites])=>{
             var logArray = Array();
             logs.forEach(element => {
@@ -96,6 +97,7 @@ export class LogController{
                 }
                 let siteArray = {
                     "id":element.uptimeId,
+                    "moment": parseInt(moment().tz('Europe/Paris').format('X')),
                     "id_object":element._id,
                     "status": element.status,
                     "account":element.Account._id,
@@ -122,7 +124,7 @@ export class LogController{
     
     getLogsInRange(logs:Array<any>, forbidenDay: Array<string>, intervals: Array<string>){
         let allLogs = Array()
-        let momentTime = parseInt(moment().format('X'));
+        let momentTime = parseInt(moment().tz('Europe/Paris').format('X'));
 
         if(intervals.length > 0 || forbidenDay.length) {
             logs.forEach(el => {
@@ -131,11 +133,12 @@ export class LogController{
                     let endLog = el.datetime + el.duration
                     while(endLog > startLog){
                         let duration:number
-                        let startDay = parseInt(moment(endLog-1, 'X').startOf("days").format('X'))
+                        let startDay = parseInt(moment(endLog-1, 'X').tz('Europe/Paris').startOf("days").format('X'))
                         let startInterval = startDay
-                        let endInterval = parseInt(moment(endLog-1, 'X').endOf("days").format('X'))
+                        let endInterval = parseInt(moment(endLog-1, 'X').tz('Europe/Paris').endOf("days").format('X'))
                         if(intervals.length > 0){
                             startInterval = startDay + parseInt(intervals[0])
+
                             endInterval = startDay + parseInt(intervals[1])
                         }
                         if(endInterval > momentTime) {
@@ -150,7 +153,7 @@ export class LogController{
                         else
                             duration = (Math.max(...arrayInterval) - Math.min(...arrayInterval)) - (Math.max(startInterval, startDay) - Math.min(startInterval, startDay)) - (Math.max(endInterval, endLog) - Math.min(endInterval, endLog))
                         
-                        if(forbidenDay.length > 0 && forbidenDay.indexOf(moment(startInterval, 'X').endOf('day').locale('en').format('dddd').toLowerCase()) > -1){
+                        if(forbidenDay.length > 0 && forbidenDay.indexOf(moment(startInterval, 'X').tz('Europe/Paris').endOf('day').locale('en').format('dddd').toLowerCase()) > -1){
                             duration = 0
                         }
                         if(duration != 0){
@@ -158,6 +161,7 @@ export class LogController{
                                 startDay = startInterval
                             let log = {
                                 "site":el.site,
+                                "startInterval":startInterval,
                                 "datetime":startDay,
                                 "duration":duration,
                                 "reason":el.reason,
@@ -180,16 +184,16 @@ export class LogController{
     getDuration(start:number, end: number, forbidenDay: Array<string>, intervals: Array<string>){
         let total = 0
         while(end > start){
-            let startElement = parseInt(moment(end-1, 'X').startOf("days").format('X'))
+            let startElement = parseInt(moment(end-1, 'X').tz('Europe/Paris').startOf("days").format('X'))
             let startInterval:number
             let endInterval:number
             if(intervals.length > 0){
-                startInterval = parseInt(moment(startElement, 'X').add(parseInt(intervals[0]), 'seconds').format('X'))
-                endInterval = parseInt(moment(startElement, 'X').add(parseInt(intervals[1]), 'seconds').format('X'))
+                startInterval = parseInt(moment(startElement, 'X').tz('Europe/Paris').add(parseInt(intervals[0]), 'seconds').format('X'))
+                endInterval = parseInt(moment(startElement, 'X').tz('Europe/Paris').add(parseInt(intervals[1]), 'seconds').format('X'))
                 if(endInterval > end)
                     endInterval = end
             } else {
-                startInterval = parseInt(moment(end-1, 'X').startOf("days").format('X'))
+                startInterval = parseInt(moment(end-1, 'X').tz('Europe/Paris').startOf("days").format('X'))
                 endInterval = end
             }
             let duration:number
@@ -198,10 +202,10 @@ export class LogController{
             duration = endInterval - startInterval
             
             total = total + duration
-            if(forbidenDay.length > 0 && forbidenDay.indexOf(moment(startElement, 'X').endOf('day').locale('en').format('dddd').toLowerCase()) > -1){
+            if(forbidenDay.length > 0 && forbidenDay.indexOf(moment(startElement, 'X').tz('Europe/Paris').endOf('day').locale('en').format('dddd').toLowerCase()) > -1){
                 total = total - duration
             }
-            end = parseInt(moment(end-1, 'X').startOf("days").format('X'))
+            end = parseInt(moment(end-1, 'X').tz('Europe/Paris').startOf("days").format('X'))
         }
         return total
     }
