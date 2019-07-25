@@ -1,15 +1,9 @@
 <template>
     <div id="result">
-        <Header @searchInTab="searchInTab" @downloadCsv="downloadCsv" :hasSearch="hasSearch" :keyRoute="key" :date="date" :searchinput="search" :accounts="accounts" :idAccount="idAccount"></Header>
-        <div class="container">
-            <div v-if="search != ''" class="mb-5 bg-transparent text-dark text-center">
-                <p id="text">Recherche : {{search}}</p>
-                <p id="nbLine">Nombre de résultats : {{filter.length}}</p>
-            </div>
-        </div>
+        <Header @searchInTab="searchInTab" @downloadCsv="downloadCsv" :hasSearch="hasSearch" :keyRoute="key" :date="date" :searchinput="search" :accounts="accounts" :idAccount="idAccount" :nbElement="filter.length"></Header>
         <PlageHoraire @searchWithHoraire="searchWithHoraire" :custominterval="custom_interval"></PlageHoraire>
         <div class="container table-year">
-            <Table @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true" :hasIndispoInfo="true"></Table>
+            <Table @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :keyAccount="key" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true" :hasIndispoInfo="true" :processing="processing"></Table>
         </div>
         <nav class="navbar fixed-bottom navbar-expand-lg navbar-dark bg-dark">
             <a href="#" class="navbar-brand">Réal. Actigraph</a>
@@ -44,7 +38,8 @@ export default {
             idAccount: '',
             daysSelected:[],
             custom_interval:["0", "86400"],
-            accounts: process.env.Accounts,
+            accounts: process.env.Accounts, 
+            processing:true
         } 
     },
     computed: {
@@ -163,8 +158,11 @@ export default {
                 }
             }
         },
+
         getUptimeData: async function(){
             let vm = this
+            vm.processing = true
+
             let currentDate
             var results = []
             let year = moment().format('YYYY')
@@ -199,6 +197,9 @@ export default {
             }
 
             vm.key = route
+            if(vm.custom_interval[0] === "0" && vm.custom_interval[1] === "0")
+              vm.custom_interval[1] = "86399";  
+
             $.each(route, async function(key, value) {
                 let data = {
                     "account":value,
@@ -212,8 +213,7 @@ export default {
                         "ranges":vm.range
                     }
                 }
-                let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
-                //let url = 'http://localhost:3000/siteslogs'
+                let url = process.env.urlAPI+'siteslogs'
                 await axios.post(url, data).
                 then(function (response) {
                     var monitors = response.data
@@ -251,10 +251,11 @@ export default {
                         else 
                             ranges.unshift((total/numberRange).toFixed(3))
                         
+                        let tmpAccountName = monitors[i].accountname.split('@');
                         results.push({
                             "status":monitors[i].status,
                             "id":monitors[i].id,
-                            "name":monitors[i].friendly_name,
+                            "name":monitors[i].friendly_name+" - "+tmpAccountName[0],
                             "ranges": ranges.map(Number),
                             "cumul":cumul,
                             "cumulSeconde":secondeCumul,
@@ -263,13 +264,13 @@ export default {
                             "url":monitors[i].url,
                             "isVisible":true
                         })
+                        vm.processing = false;
                         vm.getMoyenne()
-                    }
-                    
+                    }                    
                 })
             });
-            
             return results;
+
         },
         downloadCsv: function(e){
             var json = Array()

@@ -8,7 +8,7 @@
                         <span class="fas fa-angle-double-down" aria-hidden="true"></span>
                     </a>
                 </div>
-                <div id="collapseTwo" class="collapse show" data-parent="#accordion">
+                <div id="collapseTwo" class="collapse" data-parent="#accordion">
                     <div class="card-body">
                         <div class="row">
                             <span class="col-md-2 align-middle text-form">Entre</span>
@@ -78,7 +78,6 @@ export default {
             daysSelected: [],
             days: [{name:"Lundi", val:"monday"}, {name:"Mardi", val:"tuesday"},{name:"Mercredi", val:"wednesday"},{name:"Jeudi", val:"thursday"},{name:"Vendredi", val:"friday"},{name:"Samedi", val:"saturday"},{name:"Dimanche", val:"sunday"}],
             hours: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23"],
-            minutes: ["00", "15", "30", "45"],
         }
     },
     created(){
@@ -86,6 +85,22 @@ export default {
     },
     watch: {
         '$route': 'convertInterval'
+    },
+    computed: {
+        minutes :{
+            get : function(){
+                let arrayMinutes = [];
+                for(var i = 0; i<60; i++){
+                    if(i < 10){
+                        arrayMinutes.push(('0' + i).slice(-2));
+                    } else {
+                        arrayMinutes.push(i.toString());
+                    }
+                }
+
+                return arrayMinutes;
+            }
+        }
     },
     methods: {
         searchWithHoraire: function(){

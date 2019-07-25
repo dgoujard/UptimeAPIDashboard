@@ -2,12 +2,14 @@ import * as mongoose from 'mongoose';
 import { Request, Response } from 'express';
 import { SiteSchema } from '../models/SiteModel';
 import { LogSchema } from '../models/LogModel';
+import { AccountTypeSchema } from '../models/AccountTypeModel';
 
 //import * as moment from 'moment/moment';
 import * as moment from 'moment-timezone';
 
 const Log = mongoose.model('Log', LogSchema);
 const Site = mongoose.model('Sites', SiteSchema);
+const AccountType = mongoose.model('typeaccount', AccountTypeSchema);
 
 export class LogController{
     public deleteLogs(req: Request, res: Response){
@@ -29,10 +31,11 @@ export class LogController{
     public getLogsBySites = (req: Request, res: Response) => {
         const { site, ranges, custom_days_range = Array(), custom_interval = Array(), account=0} = req.body;
         let Logs = Log.find({}).populate('Site').populate('Type').exec();
+        let TypeAccount = AccountType.find().exec();
         let Sites =  Site.find().populate('Account').exec();
         let allSites = Array();
         let momentTime = parseInt(moment().tz('Europe/Paris').format('X'));
-        Promise.all([Logs, Sites]).then(([logs, sites])=>{
+        Promise.all([Logs, Sites, TypeAccount]).then(([logs, sites, typeaccount])=>{
             var logArray = Array();
             logs.forEach(element => {
                 if([1, 2].indexOf(element.Type.logTypeId) > -1) {
@@ -46,6 +49,12 @@ export class LogController{
                     logArray.push(tmpLog)
                 }
             });
+            if(Array.isArray(site))
+                sites = sites.filter(e => site.indexOf(e.uptimeId) > -1)
+                
+            if(account != 0)
+                sites = sites.filter(e => e.Account.Type == account)
+            
             sites.forEach(element => {
                 let logsSite = logArray.filter( e => e.site === element.uptimeId)
                 let uptime = [];
@@ -95,12 +104,15 @@ export class LogController{
                         }
                     });
                 }
+                let accounttype = typeaccount.find(e => e.id.toString() === element.Account.Type)
                 let siteArray = {
                     "id":element.uptimeId,
                     "moment": parseInt(moment().tz('Europe/Paris').format('X')),
+                    "accounttype":accounttype,
                     "id_object":element._id,
                     "status": element.status,
                     "account":element.Account._id,
+                    "accountname":element.Account.email,
                     "custom_uptime_ranges":uptime.join("-"),
                     "custom_days_range": custom_days_range.join("-"),
                     "friendly_name":element.name,
@@ -110,11 +122,7 @@ export class LogController{
                 }
                 allSites.push(siteArray);
             })
-            if(Array.isArray(site))
-                allSites = allSites.filter(e => site.indexOf(e.id) > -1)
-            if(account != 0){
-                allSites = allSites.filter(e => e.account == account)
-            }
+
             allSites.sort((a,b) => ((a.friendly_name).toUpperCase() > (b.friendly_name).toUpperCase()) ? 1 : (((b.friendly_name).toUpperCase() > (a.friendly_name).toUpperCase()) ? -1 : 0));
             res.json(allSites)
         },reason => {
@@ -125,7 +133,6 @@ export class LogController{
     getLogsInRange(logs:Array<any>, forbidenDay: Array<string>, intervals: Array<string>){
         let allLogs = Array()
         let momentTime = parseInt(moment().tz('Europe/Paris').format('X'));
-
         if(intervals.length > 0 || forbidenDay.length) {
             logs.forEach(el => {
                 if(el.type === 1) {

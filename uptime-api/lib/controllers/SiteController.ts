@@ -1,4 +1,3 @@
-
 import * as mongoose from 'mongoose';
 import { SiteSchema } from '../models/SiteModel';
 import { LogSchema } from '../models/LogModel';

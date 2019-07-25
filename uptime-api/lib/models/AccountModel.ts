@@ -10,5 +10,9 @@ export const AccountSchema = new Schema({
     apiKey: {
         type: String,
         required: 'Enter an apiKey'
+    },
+    Type: {
+        type: String,
+        required: 'Enter an account type'
     }
 });

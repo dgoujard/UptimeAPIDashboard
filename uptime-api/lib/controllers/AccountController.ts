@@ -23,6 +23,6 @@ export class AccountController{
                 res.send(err);
             }
             res.json(account);
-        });
+        }).populate('Type');
     }
 }

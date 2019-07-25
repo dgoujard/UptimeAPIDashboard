@@ -282,8 +282,20 @@ export default {
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected
             }
-            let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
-            //let url = 'http://localhost:3000/siteslogs'
+            if(vm.$route.params.interval === undefined){
+                data = {
+                    "site":[parseInt(this.$route.params.id)],
+                    "ranges":this.range,
+                }
+            } else {
+               if(vm.$route.params.interval[0] === '0' && vm.$route.params.interval[1] === '86400'){
+                    data = {
+                        "site":[parseInt(this.$route.params.id)],
+                        "ranges":this.range,
+                    }
+                }  
+            }
+            let url = process.env.urlAPI+'siteslogs'
             axios.post(url, data).
             then(function (response) {
                 var monitors = response.data[0]
@@ -352,10 +364,8 @@ export default {
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected
             }
-            console.log("week: ", data)
             let detail = Array()
-            let url = 'https://apiuptime.swarm.actigraph.com/siteslogs'
-            //let url = 'http://localhost:3000/siteslogs'
+            let url = process.env.urlAPI+'siteslogs'
             axios.post(url, data).
             then(function (response) {
                 for(var i in response.data){

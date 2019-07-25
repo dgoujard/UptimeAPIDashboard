@@ -1,8 +1,9 @@
 'use strict'
 module.exports = {
   NODE_ENV: '"production"',
+  urlAPI:'"https://apiuptime.swarm.actigraph.com/"',
   Accounts: 
-  [{name:'"info@actigraph.com"', key:['"5d0cb273e84a427bbdb774bf"']}, 
-  {name:'"externe@actigraph.com"', key:['"5d0cb29ce84a42880bb774c1"','"5d15e76baf18e1087b9cc379"']}
+  [{name:'"info@actigraph.com"', key:['"5d39a641a7bc6b309069b467"']}, 
+  {name:'"externe@actigraph.com"', key:['"5d39a658a7bc6b309069b468"']}
   ]
 }

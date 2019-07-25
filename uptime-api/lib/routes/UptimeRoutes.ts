@@ -1,4 +1,5 @@
 import {Request, Response} from "express";
+import { AccountTypeController } from "../controllers/AccountTypeController";
 import { AccountController } from "../controllers/AccountController";
 import { SiteController } from "../controllers/SiteController";
 import { UpdateDataController } from "../controllers/UpdateDataController";
@@ -7,6 +8,7 @@ import { LogController } from "../controllers/LogController";
 
 
 export class Routes {       
+    public accountTypeController: AccountTypeController = new AccountTypeController()
     public accountController: AccountController = new AccountController() 
     public siteController: SiteController = new SiteController() 
     public updateDataController: UpdateDataController = new UpdateDataController() 
@@ -27,6 +29,10 @@ export class Routes {
         app.route('/account')
         .get(this.accountController.getAccounts)
         .post(this.accountController.addAccount);
+        
+        app.route('/accountype')
+        .get(this.accountTypeController.getAccountType)
+        .post(this.accountTypeController.addAccountType);
 
         app.route('/sites')
         .get(this.siteController.getSite)

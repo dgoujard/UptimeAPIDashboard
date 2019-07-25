@@ -38,8 +38,12 @@
                             </div>
                         </div>
                         </ul>
+                        <button type="button" class="btn btn-outline-primary my-2 my-sm-0 mr-2">
+                            {{nbElement}}
+                        </button>
                         <button class="btn btn-outline-primary my-2 my-sm-0" type="" @click.prevent="downloadCsv"><span class="fas fa-cloud-download-alt" aria-hidden="true"></span> CSV</button>
                             &nbsp;
+                            
                         <div class="my-2 my-lg-0">
                             <input class="form-control mr-sm-2" type="text" id="search" placeholder="Rechercher" v-model="search" @keyup="searchInTab">
                         </div>
@@ -55,7 +59,7 @@ import moment,{ duration } from 'moment'
 import axios from 'axios'
 
 export default {
-    props: ['hasSearch', 'keyRoute', 'date', 'searchinput', 'accounts', 'idAccount'],
+    props: ['hasSearch', 'keyRoute', 'date', 'searchinput', 'accounts', 'idAccount', 'nbElement'],
     name: 'Header',
     data(){
         return{

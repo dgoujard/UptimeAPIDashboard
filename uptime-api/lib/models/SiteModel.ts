@@ -28,4 +28,8 @@ export const SiteSchema = new Schema({
         type: Number,
         required: 'Enter a status'
     },
+    lastlog: { 
+        type: Number,
+        required: 'Enter a lastlog'
+    },
 });
