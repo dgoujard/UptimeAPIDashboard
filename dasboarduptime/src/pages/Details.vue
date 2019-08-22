@@ -144,6 +144,107 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="card border-primary" v-if="filter != ''">
+                                    <div class="card-header">
+                                        <div class="col-xs-9 text-center">
+                                            <strong >SSL Informations</strong>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center lastlogs">
+                                        <table class="table table-hover table-striped table-fixed table-sm" id="tableLogs">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Etat</td>
+                                                    <td v-if="filter[0].ssl.ssl_monitored == true"><p class="success">Actif</p></td>
+                                                    <td v-if="filter[0].ssl.ssl_monitored == false"><p class="danger">Inactif</p></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Emetteur</td><td>{{filter[0].ssl.ssl_issuer}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Sujet</td><td>{{filter[0].ssl.ssl_subject}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Algo</td><td>{{filter[0].ssl.ssl_algo}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Date expiration</td>
+                                                    <td v-if="filter[0].ssl.ssl_expireDatetime-currenttimestamp > 7"><p class="success">{{filter[0].ssl.ssl_expireDatetime | convertTimestampInDateAndHour}}</p></td>
+                                                    <td v-if="filter[0].ssl.ssl_expireDatetime-currenttimestamp <= 7"><p class="danger">{{filter[0].ssl.ssl_expireDatetime | convertTimestampInDateAndHour}}</p></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="card border-primary" v-if="filter != ''">
+                                    <div class="card-header">
+                                        <div class="col-xs-9 text-center">
+                                            <strong>Lighthouse Informations</strong>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center lastlogs">
+                                        <table class="table table-hover table-striped table-fixed table-sm" id="tableLogs">
+                                            <tbody>
+                                                <tr>
+                                                    <td>Performance</td>
+                                                    <td v-if="filter[0].lighthouse.lighthouse_performance >= 90"><p class="success">{{filter[0].lighthouse.lighthouse_performance}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_performance >= 50 && filter[0].lighthouse.lighthouse_performance < 90"><p class="alert">{{filter[0].lighthouse.lighthouse_performance}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_performance < 50"><p class="danger">{{filter[0].lighthouse.lighthouse_performance}}</p></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Accessibility</td>
+                                                    <td v-if="filter[0].lighthouse.lighthouse_accessibility >= 90"><p class="success">{{filter[0].lighthouse.lighthouse_accessibility}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_accessibility >= 50 && filter[0].lighthouse.lighthouse_accessibility < 90"><p class="alert">{{filter[0].lighthouse.lighthouse_accessibility}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_accessibility < 50"><p class="danger">{{filter[0].lighthouse.lighthouse_accessibility}}</p></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Best practices</td>
+                                                    <td v-if="filter[0].lighthouse.lighthouse_bestPractices >= 90" class="bg-success"><p class="success">{{filter[0].lighthouse.lighthouse_bestPractices}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_bestPractices >= 50 && filter[0].lighthouse.lighthouse_bestPractices < 90"><p class="alert">{{filter[0].lighthouse.lighthouse_bestPractices}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_bestPractices < 50"><p class="danger">{{filter[0].lighthouse.lighthouse_bestPractices}}</p></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>SE0</td>
+                                                    <td v-if="filter[0].lighthouse.lighthouse_seo >= 90"><p class="success">{{filter[0].lighthouse.lighthouse_seo}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_seo >=50 && filter[0].lighthouse.lighthouse_seo < 90"><p class="alert">{{filter[0].lighthouse.lighthouse_seo}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_seo < 50"><p class="danger">{{filter[0].lighthouse.lighthouse_seo}}</p></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>PWA</td>
+                                                    <td v-if="filter[0].lighthouse.lighthouse_pwa >= 90"><p class="success">{{filter[0].lighthouse.lighthouse_pwa}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_pwa >= 50 && filter[0].lighthouse.lighthouse_pwa < 90"><p class="alert">{{filter[0].lighthouse.lighthouse_pwa}}</p></td>
+                                                    <td v-else-if="filter[0].lighthouse.lighthouse_pwa < 50"><p class="danger">{{filter[0].lighthouse.lighthouse_pwa}}</p></td>                                                
+                                                </tr>
+                                                <tr>
+                                                    <td>Date</td><td>{{filter[0].lighthouse.lighthouse_dateTime | convertTimestampInDate}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="12"><a class="btn btn-outline-primary" target="_blank" :href="filter[0].lighthouse.lighthouse_url" role="button">Plus de détails</a></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <div class="card border-primary" v-if="filter != ''">
+                                    <div class="card-header">
+                                        <div class="col-xs-9 text-center">
+                                            <strong>Capture d'écran au {{filter[0].screenshot.screenshot_dateTime | convertTimestampInDate}}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="card-body text-center lastlogs">
+                                        <img :src="filter[0].screenshot.screenshot_url" class="img-fluid" alt="Screen shot website">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -168,7 +269,8 @@ export default {
             jours : [],
             hasSearch : false,
             filter: [],
-            date: null
+            date: null,
+            currenttimestamp:moment().format('X')
         } 
     },
     computed: {
@@ -259,6 +361,12 @@ export default {
         formatNumber (value) {
             var number = value.toFixed(3)
             return number.toString().replace('.', ',');
+        },
+        convertTimestampInDate (value) {
+            return moment(value, 'X').locale('fr').format('L')
+        },
+        convertTimestampInDateAndHour (value) {
+            return moment(value, 'X').locale('fr').format('L HH:mm:ss')
         }
     },
     created(){
@@ -348,6 +456,9 @@ export default {
                     "longerLogDown":longerLogDown,
                     "timestampLogdown": longerLogDown[0]["timestamp"],
                     "url":monitors.url,
+                    "ssl":monitors.ssl,
+                    "lighthouse":monitors.lighthouse,
+                    "screenshot":monitors.screenshot,
                     "isVisible":true,
                 })
             });

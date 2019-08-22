@@ -35,6 +35,9 @@
                     <tr v-for="(result, index) in data" :key="index" @dblclick="displayRow(index)" :class="{'not-visible':!result.isVisible}">
                         <td scope="row" class="name text-left">
                             <p v-if="result.status==2 || result.status==0" class="success text-left">
+                                <span v-if="result.ssl.ssl_monitored == true" class="fa fa-lock"></span>
+                                <span v-if="result.ssl.ssl_monitored == false" class="fa fa-lock-open not-ssl"></span>
+                                <span v-if="result.ssl.ssl_monitored == true && result.ssl_expireDatetime-currenttimestamp <= 7" class="fa fa-lock-open alert-ssl"></span>
                                 <span v-if="result.status==2" class="fa fa-check-circle" aria-hidden="true"></span>
                                 <strong><router-link :to="{name:'Details', 
                                     params:{
@@ -51,6 +54,9 @@
                                 <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                             </p>
                             <p v-if="result.status==9" class="alert text-left">
+                                <span v-if="result.ssl.ssl_monitored == true" class="fa fa-lock"></span>
+                                <span v-if="result.ssl.ssl_monitored == false" class="fa fa-lock-open not-ssl"></span>
+                                <span v-if="result.ssl.ssl_monitored == true && result.ssl_expireDatetime-currenttimestamp <= 7" class="fa fa-lock-open alert-ssl"></span>
                                 <span v-if="result.status==9" class="fa fa-exclamation-circle" aria-hidden="true"></span>
                                 <strong><router-link :to="{name:'Details', 
                                     params:{
@@ -67,6 +73,9 @@
                                 <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
                             </p>
                             <p v-if="result.status==8" class="danger text-left">
+                                <span v-if="result.ssl.ssl_monitored == true" class="fa fa-lock"></span>
+                                <span v-if="result.ssl.ssl_monitored == false" class="fa fa-lock-open not-ssl"></span>
+                                <span v-if="result.ssl.ssl_monitored == true && result.ssl_expireDatetime-currenttimestamp <= 7" class="fa fa-lock-open alert-ssl"></span>
                                 <span v-if="result.status==8" class="fa fa-times-circle" aria-hidden="true"></span>
                                 <strong><router-link :to="{name:'Details', 
                                     params:{
@@ -118,12 +127,14 @@
 
 </template>
 <script>
+import moment,{ duration } from 'moment'
 export default {
     props: ['data', 'months', 'average', 'keyAccount', 'date', 'search', 'idAccount','custom_interval', 'daysSelected', 'hasSort', 'hasDisplayRow', 'hasAverage', 'hasIndispoInfo', 'processing'],
     name : 'Table',
     data(){
         return{
             sortKey: '',
+            currenttimestamp:moment().format('X')
         }
     },
     computed: {
@@ -164,3 +175,12 @@ export default {
     }
 }
 </script>
+<style>
+
+.not-ssl {
+    color:#dc3545;
+}
+
+
+
+</style>

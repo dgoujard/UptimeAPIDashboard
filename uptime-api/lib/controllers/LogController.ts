@@ -105,6 +105,29 @@ export class LogController{
                     });
                 }
                 let accounttype = typeaccount.find(e => e.id.toString() === element.Account.Type)
+                let ssl = {
+                    "ssl_monitored":element.ssl_monitored,
+                    "ssl_issuer":element.ssl_issuer,
+                    "ssl_subject":element.ssl_subject,
+                    "ssl_algo":element.ssl_algo,
+                    "ssl_expireDatetime":element.ssl_expireDatetime,
+                    "ssl_error":element.ssl_error
+                };
+                let screenShot = {
+                    "screenshot_url":element.screenshot_url,
+                    "screenshot_dateTime":element.screenshot_dateTime,
+                    "screenshot_error":element.screenshot_error
+                };
+                let lighthouse = {
+                    "lighthouse_url":element.lighthouse_url,
+                    "lighthouse_performance":element.lighthouse_performance,
+                    "lighthouse_accessibility":element.lighthouse_accessibility,
+                    "lighthouse_bestPractices":element.lighthouse_bestPractices,
+                    "lighthouse_seo":element.lighthouse_seo,
+                    "lighthouse_pwa":element.lighthouse_pwa,
+                    "lighthouse_dateTime":element.lighthouse_dateTime
+                };
+
                 let siteArray = {
                     "id":element.uptimeId,
                     "moment": parseInt(moment().tz('Europe/Paris').format('X')),
@@ -119,6 +142,9 @@ export class LogController{
                     "creation_datetime":element.createDatetime,
                     "url":element.url,
                     "logs":allLogs,
+                    "ssl":ssl,
+                    "screenshot":screenShot,
+                    "lighthouse":lighthouse
                 }
                 allSites.push(siteArray);
             })

@@ -262,7 +262,8 @@ export default {
                             "longerLogDown":longerLogDown,
                             "timestampLogdown": longerLogDown[0]["timestamp"],
                             "url":monitors[i].url,
-                            "isVisible":true
+                            "isVisible":true,
+                            "ssl":monitors[i].ssl
                         })
                         vm.processing = false;
                         vm.getMoyenne()

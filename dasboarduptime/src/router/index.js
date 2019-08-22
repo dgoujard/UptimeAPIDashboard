@@ -19,7 +19,8 @@ export default new Router({
         {
             path: '/details/:id',
             name: 'Details',
-            component: Details
+            component: Details,
+            props: true,
         },
         {
             path: '/account/:id/:year',
