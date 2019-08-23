@@ -153,6 +153,7 @@ export default {
             } else { 
                 if(typeof vm.$route.params.search !== "undefined")
                 {
+                    console.log("ouljrf")
                     if(vm.$route.params.search != "")
                         vm.searchInTab(vm.$route.params.search)
                 }

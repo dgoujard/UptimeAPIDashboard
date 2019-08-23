@@ -174,6 +174,10 @@
                                                     <td v-if="filter[0].ssl.ssl_expireDatetime-currenttimestamp > 7"><p class="success">{{filter[0].ssl.ssl_expireDatetime | convertTimestampInDateAndHour}}</p></td>
                                                     <td v-if="filter[0].ssl.ssl_expireDatetime-currenttimestamp <= 7"><p class="danger">{{filter[0].ssl.ssl_expireDatetime | convertTimestampInDateAndHour}}</p></td>
                                                 </tr>
+                                                <tr>
+                                                    <td>Erreur</td>
+                                                    <td>{{filter[0].ssl.ssl_error}}</td>
+                                                </tr>
                                             </tbody>
                                         </table>
                                     </div>
