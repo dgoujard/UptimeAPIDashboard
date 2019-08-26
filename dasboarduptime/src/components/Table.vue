@@ -137,6 +137,9 @@ export default {
             currenttimestamp:moment().format('X')
         }
     },
+    updated() {
+        $('[data-toggle="tooltip"]').tooltip();
+    },
     computed: {
         colspan :{
             get : function(){

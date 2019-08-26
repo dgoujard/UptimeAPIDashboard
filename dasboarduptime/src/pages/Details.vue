@@ -152,7 +152,7 @@
                                             <strong >SSL Informations</strong>
                                         </div>
                                     </div>
-                                    <div class="card-body text-center lastlogs">
+                                    <div class="card-body text-center">
                                         <table class="table table-hover table-striped table-fixed table-sm" id="tableLogs">
                                             <tbody>
                                                 <tr>
@@ -190,7 +190,7 @@
                                             <strong>Lighthouse Informations</strong>
                                         </div>
                                     </div>
-                                    <div class="card-body text-center lastlogs">
+                                    <div class="card-body text-center">
                                         <table class="table table-hover table-striped table-fixed table-sm" id="tableLogs">
                                             <tbody>
                                                 <tr>
@@ -243,7 +243,7 @@
                                             <strong>Capture d'écran au {{filter[0].screenshot.screenshot_dateTime | convertTimestampInDate}}</strong>
                                         </div>
                                     </div>
-                                    <div class="card-body text-center lastlogs">
+                                    <div class="card-body text-center">
                                         <img :src="filter[0].screenshot.screenshot_url" class="img-fluid" alt="Screen shot website">
                                     </div>
                                 </div>
