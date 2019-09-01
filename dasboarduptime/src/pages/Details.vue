@@ -275,87 +275,87 @@ export default {
             filter: [],
             date: null,
             currenttimestamp:moment().format('X')
-        } 
+        };
     },
     computed: {
         weekRange :{
             get : function(){
-                let currentDate = moment().format('X')
-                let startYear = moment(currentDate, 'X').startOf('year').format('X')
-                let yearRange = ""+startYear+"_"+currentDate+""
+                let currentDate = moment().format('X');
+                let startYear = moment(currentDate, 'X').startOf('year').format('X');
+                let yearRange = ""+startYear+"_"+currentDate+"";
 
-                let startFirstWeek = parseInt(moment(currentDate, 'X').startOf('week').format('X'))+86400
-                let endFirstWeek = parseInt(moment(currentDate, 'X').endOf('week').format('X'))+86401
-                let firstWeek = ""+startFirstWeek+"_"+currentDate+""
-                let week1 = "Du "+moment(startFirstWeek, 'X').locale('fr').format('L')+" à Aujourd'hui"
-                let secondWeek = ""+(startFirstWeek-604800)+"_"+(endFirstWeek-604800)+""
-                let week2 = "Du "+moment((startFirstWeek-604800), 'X').locale('fr').format('L')+" au "+moment((endFirstWeek-604800), 'X').locale('fr').format('L')
-                let thirdWeek = ""+(startFirstWeek-604800*2)+"_"+(endFirstWeek-604800*2)+""
-                let week3 = "Du "+moment((startFirstWeek-604800*2), 'X').locale('fr').format('L')+" au "+moment((endFirstWeek-604800*2), 'X').locale('fr').format('L')
-                let fourthWeek = ""+(startFirstWeek-604800*3)+"_"+(endFirstWeek-604800*3)+""
-                let week4 = "Du "+moment((startFirstWeek-604800*3), 'X').locale('fr').format('L')+" au "+moment((endFirstWeek-604800*3), 'X').locale('fr').format('L')
+                let startFirstWeek = parseInt(moment(currentDate, 'X').startOf('week').format('X'))+86400;
+                let endFirstWeek = parseInt(moment(currentDate, 'X').endOf('week').format('X'))+86401;
+                let firstWeek = ""+startFirstWeek+"_"+currentDate+"";
+                let week1 = "Du "+moment(startFirstWeek, 'X').locale('fr').format('L')+" à Aujourd'hui";
+                let secondWeek = ""+(startFirstWeek-604800)+"_"+(endFirstWeek-604800)+"";
+                let week2 = "Du "+moment((startFirstWeek-604800), 'X').locale('fr').format('L')+" au "+moment((endFirstWeek-604800), 'X').locale('fr').format('L');
+                let thirdWeek = ""+(startFirstWeek-604800*2)+"_"+(endFirstWeek-604800*2)+"";
+                let week3 = "Du "+moment((startFirstWeek-604800*2), 'X').locale('fr').format('L')+" au "+moment((endFirstWeek-604800*2), 'X').locale('fr').format('L');
+                let fourthWeek = ""+(startFirstWeek-604800*3)+"_"+(endFirstWeek-604800*3)+"";
+                let week4 = "Du "+moment((startFirstWeek-604800*3), 'X').locale('fr').format('L')+" au "+moment((endFirstWeek-604800*3), 'X').locale('fr').format('L');
 
-                this.jours = [week4, week3, week2, week1]
+                this.jours = [week4, week3, week2, week1];
 
-                let weekRange = yearRange+"-"+fourthWeek+"-"+thirdWeek+"-"+secondWeek+"-"+firstWeek
-                return weekRange
+                let weekRange = yearRange+"-"+fourthWeek+"-"+thirdWeek+"-"+secondWeek+"-"+firstWeek;
+                return weekRange;
             }
         },
         range :{
             get : function(){
-                let months = Array()
-                let currentDate
-                let year = moment().format('YYYY')
+                let months = Array();
+                let currentDate;
+                let year = moment().format('YYYY');
                 if("year" in this.$route.params && parseInt(year) != this.$route.params.year){
-                    this.date = this.$route.params.year
-                    currentDate = moment(this.$route.params.year, 'YYYY').endOf('year').format('X')
+                    this.date = this.$route.params.year;
+                    currentDate = moment(this.$route.params.year, 'YYYY').endOf('year').format('X');
                 }else{
-                    this.date = moment().format('YYYY')
-                    currentDate = moment().format('X')
+                    this.date = moment().format('YYYY');
+                    currentDate = moment().format('X');
                 }
-                let startMonth = moment(currentDate, 'X').startOf('month').format('X')
-                let startYear = moment(currentDate, 'X').startOf('year').format('X')
-                let rang = ""+startMonth+"_"+currentDate+""
-                months.push(rang)
+                let startMonth = moment(currentDate, 'X').startOf('month').format('X');
+                let startYear = moment(currentDate, 'X').startOf('year').format('X');
+                let rang = ""+startMonth+"_"+currentDate+"";
+                months.push(rang);
 
-                let dateInTheMonth = startMonth-1 
-                let startBefore = startMonth
+                let dateInTheMonth = startMonth-1;
+                let startBefore = startMonth;
                 while(dateInTheMonth>startYear){
-                    let startMonth = moment(dateInTheMonth, 'X').startOf('month').format('X')
-                    let endMonth = startBefore
-                    startBefore = startMonth
-                    rang = ""+startMonth+"_"+endMonth+""
-                    months.push(rang)
-                    dateInTheMonth = startMonth-1
+                    let startMonth = moment(dateInTheMonth, 'X').startOf('month').format('X');
+                    let endMonth = startBefore;
+                    startBefore = startMonth;
+                    rang = ""+startMonth+"_"+endMonth+"";
+                    months.push(rang);
+                    dateInTheMonth = startMonth-1;
                 }
-                let monthRange = months.join('-')
-                let range = monthRange
+                let monthRange = months.join('-');
+                let range = monthRange;
 
-                return range
+                return range;
             }
         },
         months:{
             get : function(){
-                let months = Array()
-                let currentDate = parseInt(moment().format('X'))
+                let months = Array();
+                let currentDate = parseInt(moment().format('X'));
 
-                let year = moment().format('YYYY')
+                let year = moment().format('YYYY');
                 if("year" in this.$route.params && parseInt(year) != this.$route.params.year){
-                    currentDate = parseInt(moment(this.$route.params.year, 'YYYY').endOf('year').format('X'))
+                    currentDate = parseInt(moment(this.$route.params.year, 'YYYY').endOf('year').format('X'));
                     this.date = this.$route.params.year;
                 } else {
-                    this.date = moment().format('YYYY')
+                    this.date = moment().format('YYYY');
                 }
-                let startMonth = parseInt(moment(currentDate, 'X').startOf('month').format('X'))
+                let startMonth = parseInt(moment(currentDate, 'X').startOf('month').format('X'));
 
-                let startYear = moment(currentDate, 'X').startOf('year').format('X')
-                months.push(moment(currentDate, 'X').locale('fr').format('MMM'))
-                let dateInTheMonth = startMonth-1
+                let startYear = moment(currentDate, 'X').startOf('year').format('X');
+                months.push(moment(currentDate, 'X').locale('fr').format('MMM'));
+                let dateInTheMonth = startMonth-1;
                 while(dateInTheMonth>startYear){
-                    let name = moment(dateInTheMonth, 'X').locale('fr').format('MMM')
-                    startMonth = parseInt(moment(dateInTheMonth, 'X').startOf('month').format('X'))
-                    months.unshift(name)
-                    dateInTheMonth = startMonth-1 
+                    let name = moment(dateInTheMonth, 'X').locale('fr').format('MMM');
+                    startMonth = parseInt(moment(dateInTheMonth, 'X').startOf('month').format('X'));
+                    months.unshift(name);
+                    dateInTheMonth = startMonth-1;
                 }
                 return months
             }
@@ -363,91 +363,91 @@ export default {
     },
     filters: {
         formatNumber (value) {
-            var number = value.toFixed(3)
+            var number = value.toFixed(3);
             return number.toString().replace('.', ',');
         },
         convertTimestampInDate (value) {
-            return moment(value, 'X').locale('fr').format('L')
+            return moment(value, 'X').locale('fr').format('L');
         },
         convertTimestampInDateAndHour (value) {
-            return moment(value, 'X').locale('fr').format('L HH:mm:ss')
+            return moment(value, 'X').locale('fr').format('L HH:mm:ss');
         }
     },
     created(){
-        this.getData()
+        this.getData();
     },
     watch: {
         '$route': 'getData'
     },
     methods : {
         getData: async function(){
-            let vm = this
-            await vm.getUptimeData()
-            await vm.getDataUptimeWeek()
+            let vm = this;
+            await vm.getUptimeData();
+            await vm.getDataUptimeWeek();
         },
         getUptimeData: async function(){
-            let result = []
+            let result = [];
             let vm = this;
             let data = {
                 "site":[parseInt(this.$route.params.id)],
                 "ranges":this.range,
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected
-            }
+            };
             if(vm.$route.params.interval === undefined){
                 data = {
                     "site":[parseInt(this.$route.params.id)],
                     "ranges":this.range,
-                }
+                };
             } else {
                if(vm.$route.params.interval[0] === '0' && vm.$route.params.interval[1] === '86400'){
                     data = {
                         "site":[parseInt(this.$route.params.id)],
                         "ranges":this.range,
-                    }
+                    };
                 }  
             }
-            let url = process.env.urlAPI+'siteslogs'
+            let url = process.env.urlAPI+'siteslogs';
             axios.post(url, data).
             then(function (response) {
-                var monitors = response.data[0]
-                var logs = monitors.logs
+                var monitors = response.data[0];
+                var logs = monitors.logs;
                 const reducer = (accumulator, currentValue) => accumulator + currentValue;
-                var logsDuration = Array()
+                var logsDuration = Array();
                 for(var j in logs)
                     if(logs[j].type == 1)
-                        logsDuration.push(logs[j].duration)
+                        logsDuration.push(logs[j].duration);
 
                 if(logsDuration.length > 0){
-                    var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer))
-                    var secondeCumul = logsDuration.reduce(reducer)
+                    var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer));
+                    var secondeCumul = logsDuration.reduce(reducer);
                 }else{ 
                     var cumul = 0;
-                    var secondeCumul = 0
+                    var secondeCumul = 0;
                 }
 
-                let range = monitors.custom_uptime_ranges
-                let ranges = range.split('-').reverse()
-                let longerLogDown = vm.searchForLongerLog(monitors.logs, 1)   
+                let range = monitors.custom_uptime_ranges;
+                let ranges = range.split('-').reverse();
+                let longerLogDown = vm.searchForLongerLog(monitors.logs, 1);
                 var total = 0;
-                var numberRange = 0
+                var numberRange = 0;
 
                 for(var k in ranges){
                     if(ranges[k] !== "0.000"){
-                        numberRange = numberRange + 1
-                        total = total + parseFloat(ranges[k])
+                        numberRange = numberRange + 1;
+                        total = total + parseFloat(ranges[k]);
                     }
                 }
 
                 if(vm.searchForLongerLog(logs, 2).length == 0){
-                    vm.allLogs = "empty"
+                    vm.allLogs = "empty";
                 }else{
-                    vm.allLogs = vm.searchForLongerLog(logs, 2)
+                    vm.allLogs = vm.searchForLongerLog(logs, 2);
                 } 
                 if(total === 0)
-                    ranges.unshift("0.000")
+                    ranges.unshift("0.000");
                 else 
-                    ranges.unshift((total/numberRange).toFixed(3))
+                    ranges.unshift((total/numberRange).toFixed(3));
 
                 result.push({
                     "status":monitors.status,
@@ -464,30 +464,30 @@ export default {
                     "lighthouse":monitors.lighthouse,
                     "screenshot":monitors.screenshot,
                     "isVisible":true,
-                })
+                });
             });
             vm.filter = result;
         },
         getDataUptimeWeek: async function(){
-            let vm = this
-            let currentDate = moment().format('X')
-            let startYear = moment(currentDate, 'X').startOf('year').format('X')
-            var results = []
+            let vm = this;
+            let currentDate = moment().format('X');
+            let startYear = moment(currentDate, 'X').startOf('year').format('X');
+            var results = [];
             let data = {
                 "site":[parseInt(vm.$route.params.id)],
                 "ranges":this.weekRange,
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected
             }
-            let detail = Array()
-            let url = process.env.urlAPI+'siteslogs'
+            let detail = Array();
+            let url = process.env.urlAPI+'siteslogs';
             axios.post(url, data).
             then(function (response) {
                 for(var i in response.data){
-                    let logDown
-                    let longerLogDown = vm.searchForLongerLog(response.data[i].logs, 1)
-                    let ranges = ((response.data[i].custom_uptime_ranges.replace(/\./g, ',')).split('-')).reverse()
-                    let rangeW = ((response.data[i].custom_uptime_ranges).split('-')).reverse()
+                    let logDown;
+                    let longerLogDown = vm.searchForLongerLog(response.data[i].logs, 1);
+                    let ranges = ((response.data[i].custom_uptime_ranges.replace(/\./g, ',')).split('-')).reverse();
+                    let rangeW = ((response.data[i].custom_uptime_ranges).split('-')).reverse();
                     
                     results.push({
                         "name":response.data[i].friendly_name,
@@ -504,49 +504,49 @@ export default {
             vm.details = results;
         },
         searchForLongerLog : function (log, mode){
-            let date = 0
-            let hour = 0
-            let duration = 0
-            let reason
-            let logs = Array()
-            let logsDown = Array()
-            let maxLogDown = Array()    
+            let date = 0;
+            let hour = 0;
+            let duration = 0;
+            let reason;
+            let logs = Array();
+            let logsDown = Array();
+            let maxLogDown = Array();
             for(var i in log){
                 if(log[i].type == 1){
-                    logs.push(log[i])
+                    logs.push(log[i]);
                 }
             }
             for (var i in logs){
-                logsDown.push({"date": moment(logs[i].datetime, 'X').locale('fr').format('L'),"datetime":logs[i].datetime, "hour": moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss'), "reason":logs[i].reason, "duration":this.convertSecondIntoTime(logs[i].duration), "timestamp":logs[i].duration} )
+                logsDown.push({"date": moment(logs[i].datetime, 'X').locale('fr').format('L'),"datetime":logs[i].datetime, "hour": moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss'), "reason":logs[i].reason, "duration":this.convertSecondIntoTime(logs[i].duration), "timestamp":logs[i].duration});
                 if (logs[i].duration>duration){
-                    date = moment(logs[i].datetime, 'X').locale('fr').format('dddd L')
-                    hour = moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss')
-                    duration = logs[i].duration
-                    reason = logs[i].reason
+                    date = moment(logs[i].datetime, 'X').locale('fr').format('dddd L');
+                    hour = moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss');
+                    duration = logs[i].duration;
+                    reason = logs[i].reason;
                 }
             }
             
-            maxLogDown.push({"date":date, "hour":hour, "reason":reason,  "duration":this.convertSecondIntoTime(duration), "timestamp":duration})
+            maxLogDown.push({"date":date, "hour":hour, "reason":reason,  "duration":this.convertSecondIntoTime(duration), "timestamp":duration});
             if(mode == 1)
-                return maxLogDown
+                return maxLogDown;
             else
-                return logsDown
+                return logsDown;
         },
         convertSecondIntoTime : function (second){
-            let time = 0
-            let days = moment.duration(second, 'seconds').days()
-            let hours = moment.duration(second, 'seconds').hours()
-            let minutes = moment.duration(second, 'seconds').minutes()
-            let seconds = moment.duration(second, 'seconds').seconds()
+            let time = 0;
+            let days = moment.duration(second, 'seconds').days();
+            let hours = moment.duration(second, 'seconds').hours();
+            let minutes = moment.duration(second, 'seconds').minutes();
+            let seconds = moment.duration(second, 'seconds').seconds();
             
             if(days == "0" && hours == "0" && minutes == "0" )
-                time = seconds+"s"
+                time = seconds+"s";
             else if(days == "0" && hours == "0")
-                time = minutes+"m"+seconds+"s"
+                time = minutes+"m"+seconds+"s";
             else if(days == "0")
-                time = hours+"h"+minutes+"m"+seconds+"s"
+                time = hours+"h"+minutes+"m"+seconds+"s";
             else
-                time = days+"j"+hours+"h"+minutes+"m"+seconds+"s"
+                time = days+"j"+hours+"h"+minutes+"m"+seconds+"s";
 
             return time
         }

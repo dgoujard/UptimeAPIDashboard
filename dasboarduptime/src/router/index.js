@@ -2,11 +2,9 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Result from '@/pages/Result.vue'
 import Details from '@/pages/Details.vue'
-import Login from '@/pages/Login.vue'
-import Datatable from 'vue2-datatable-component'
+import Dashboard from '@/pages/Dashboard.vue'
 
-
-Vue.use(Router, Datatable)
+Vue.use(Router)
 
 export default new Router({
     mode: 'history',
@@ -31,6 +29,11 @@ export default new Router({
             path: '/account/:id/:year',
             name: 'Account',
             component:Result
+        },
+        {
+            path: '/dashboard/:id/:year',
+            name: 'Dashboard',
+            component:Dashboard
         }
     ]
 })

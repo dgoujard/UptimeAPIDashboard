@@ -193,4 +193,7 @@ export default {
     color: #ffc107;
 }
 
+.addFavorite {
+    color: #ffc107;
+}
 </style>

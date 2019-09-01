@@ -1,0 +1,35 @@
+<template>
+    <div class="favorites">
+        <div class="row">
+            <div v-for="(favorite) in favorites" :key="favorite.id" class="btn-group col-1 ml-5 mb-2" role="group" aria-label="Basic example">
+                <button type="button" class="btn btn-primary" :data-value="favorite" @click.prevent="favoriteSearch"> {{favorite}} </button>
+                <button type="button" class="btn btn-primary" :data-value="favorite" @click.prevent="removeFavorite" aria-label="Close">
+                    <span aria-hidden="true" :data-value="favorite">&times;</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    props: ['favorites'],
+    name: 'Favorites',
+    data(){
+        return{
+        }
+    },
+    methods: {
+        favoriteSearch: function(event) {
+            let vm = this;
+            let value = $(event.target).attr("data-value");
+            vm.$emit('searchInTab', value);
+        },
+        removeFavorite: function(event){
+            let vm = this;
+            let value = $(event.target).attr("data-value");
+            vm.$emit('removeFavorite', value);
+        }
+    }
+}
+</script>
