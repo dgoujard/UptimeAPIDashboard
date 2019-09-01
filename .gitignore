@@ -1,0 +1,15 @@
+.DS_Store
+dashboarduptime/node_modules/
+dashboarduptime/dist/*
+dashboarduptime/config/
+dashboarduptime/npm-debug.log*
+dashboarduptime/yarn-debug.log*
+dashboarduptime/yarn-error.log*
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
