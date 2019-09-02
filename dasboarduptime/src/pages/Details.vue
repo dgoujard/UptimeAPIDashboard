@@ -1,6 +1,6 @@
 <template>
     <div>
-        <Header :hasSearch="hasSearch"></Header>
+        <Header :hasSearch="hasSearch" :date="date"></Header>
         <div class="container" v-if="details != ''">
             <div class="card border-primary card-background">
                 <div class="Detail"  v-for="detail in details " :key="detail.id" >
