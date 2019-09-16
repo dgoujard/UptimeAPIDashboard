@@ -272,7 +272,6 @@ export default {
         return{
             optionsHeader: {"hasSearch":false, "hasCsv":false, "hasCount":false, "hasDashboard":false, "hasAccount": false, "hasDate": false},
             details : [],
-            allLogs : [],
             jours : [],
             hasSearch : false,
             date: null,

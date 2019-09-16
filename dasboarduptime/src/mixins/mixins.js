@@ -13,7 +13,8 @@ export default {
             custom_interval:["0", "86400"],
             average : [],
             results : [],
-            filter : []
+            filter : [],
+            allLogs : []
         }
     },
     methods: {
@@ -157,7 +158,12 @@ export default {
                             total = total + parseFloat(ranges[k]);
                         }
                     }
-
+                    
+                    if(vm.searchForLongerLog(logs, 2).length == 0){
+                        vm.allLogs = "empty";
+                    }else{
+                        vm.allLogs = vm.searchForLongerLog(logs, 2);
+                    }     
                     if(total === 0)
                         ranges.unshift("0.000");
                     else 
@@ -173,6 +179,7 @@ export default {
                         "cumulSeconde":secondeCumul,
                         "longerLogDown":longerLogDown,
                         "timestampLogdown": longerLogDown[0]["timestamp"],
+                        "logs":vm.allLogs,
                         "url":monitors[i].url,
                         "isVisible":true,
                         "ssl":monitors[i].ssl,
