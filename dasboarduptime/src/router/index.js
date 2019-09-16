@@ -31,7 +31,7 @@ export default new Router({
             component:Result
         },
         {
-            path: '/dashboard/:id/:year',
+            path: '/dashboard/:year/:id/',
             name: 'Dashboard',
             component:Dashboard
         }

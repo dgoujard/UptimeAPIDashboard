@@ -1,13 +1,13 @@
 <template>
     <div>
-        <Header :hasSearch="hasSearch" :date="date"></Header>
+        <Header :options="optionsHeader" :date="date"></Header>
         <div class="container" v-if="details != ''">
             <div class="card border-primary card-background">
                 <div class="Detail"  v-for="detail in details " :key="detail.id" >
                     <div class="col-lg-12">
                         <div class="row entete card-header">
                             <div class="col-md-12">
-                                <div class="title">
+                                <div class="title"> 
                                     <h1  v-if="filter != ''" class="text-center">{{detail.name}} : Disponibilité globale : 
                                         <small v-if="filter[0].ranges[0] == 0.000">nc</small>
                                         <small class="p-3 mb-2 bg-success" v-if="filter[0].ranges[0] > 99.9 || filter[0].ranges[0] == 100.000">{{filter[0].ranges[0] | formatNumber}} % </small>
@@ -261,18 +261,20 @@ import axios from 'axios'
 import moment from 'moment'
 import Header from '@/components/Header';
 import Table from '@/components/Table';
+import mixin from '@/mixins/mixins.js';
 
 export default {
+    mixins:[mixin],
     components: {
         Header, Table
     },
     data(){
         return{
+            optionsHeader: {"hasSearch":false, "hasCsv":false, "hasCount":false, "hasDashboard":false, "hasAccount": false, "hasDate": false},
             details : [],
             allLogs : [],
             jours : [],
             hasSearch : false,
-            filter: [],
             date: null,
             currenttimestamp:moment().format('X')
         };
@@ -300,66 +302,7 @@ export default {
                 let weekRange = yearRange+"-"+fourthWeek+"-"+thirdWeek+"-"+secondWeek+"-"+firstWeek;
                 return weekRange;
             }
-        },
-        range :{
-            get : function(){
-                let months = Array();
-                let currentDate;
-                let year = moment().format('YYYY');
-                if("year" in this.$route.params && parseInt(year) != this.$route.params.year){
-                    this.date = this.$route.params.year;
-                    currentDate = moment(this.$route.params.year, 'YYYY').endOf('year').format('X');
-                }else{
-                    this.date = moment().format('YYYY');
-                    currentDate = moment().format('X');
-                }
-                let startMonth = moment(currentDate, 'X').startOf('month').format('X');
-                let startYear = moment(currentDate, 'X').startOf('year').format('X');
-                let rang = ""+startMonth+"_"+currentDate+"";
-                months.push(rang);
-
-                let dateInTheMonth = startMonth-1;
-                let startBefore = startMonth;
-                while(dateInTheMonth>startYear){
-                    let startMonth = moment(dateInTheMonth, 'X').startOf('month').format('X');
-                    let endMonth = startBefore;
-                    startBefore = startMonth;
-                    rang = ""+startMonth+"_"+endMonth+"";
-                    months.push(rang);
-                    dateInTheMonth = startMonth-1;
-                }
-                let monthRange = months.join('-');
-                let range = monthRange;
-
-                return range;
-            }
-        },
-        months:{
-            get : function(){
-                let months = Array();
-                let currentDate = parseInt(moment().format('X'));
-
-                let year = moment().format('YYYY');
-                if("year" in this.$route.params && parseInt(year) != this.$route.params.year){
-                    currentDate = parseInt(moment(this.$route.params.year, 'YYYY').endOf('year').format('X'));
-                    this.date = this.$route.params.year;
-                } else {
-                    this.date = moment().format('YYYY');
-                }
-                let startMonth = parseInt(moment(currentDate, 'X').startOf('month').format('X'));
-
-                let startYear = moment(currentDate, 'X').startOf('year').format('X');
-                months.push(moment(currentDate, 'X').locale('fr').format('MMM'));
-                let dateInTheMonth = startMonth-1;
-                while(dateInTheMonth>startYear){
-                    let name = moment(dateInTheMonth, 'X').locale('fr').format('MMM');
-                    startMonth = parseInt(moment(dateInTheMonth, 'X').startOf('month').format('X'));
-                    months.unshift(name);
-                    dateInTheMonth = startMonth-1;
-                }
-                return months
-            }
-        },
+        }
     },
     filters: {
         formatNumber (value) {
@@ -382,15 +325,16 @@ export default {
     methods : {
         getData: async function(){
             let vm = this;
-            await vm.getUptimeData();
+            vm.getRange();
+            vm.getMonth();
+            vm.filter = await vm.getUptimeData();
             await vm.getDataUptimeWeek();
         },
         getUptimeData: async function(){
-            let result = [];
             let vm = this;
             let data = {
                 "site":[parseInt(this.$route.params.id)],
-                "ranges":this.range,
+                "ranges":vm.range,
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected
             };
@@ -403,70 +347,13 @@ export default {
                if(vm.$route.params.interval[0] === '0' && vm.$route.params.interval[1] === '86400'){
                     data = {
                         "site":[parseInt(this.$route.params.id)],
-                        "ranges":this.range,
+                        "ranges":vm.range,
                     };
                 }  
             }
             let url = process.env.urlAPI+'siteslogs';
-            axios.post(url, data).
-            then(function (response) {
-                var monitors = response.data[0];
-                var logs = monitors.logs;
-                const reducer = (accumulator, currentValue) => accumulator + currentValue;
-                var logsDuration = Array();
-                for(var j in logs)
-                    if(logs[j].type == 1)
-                        logsDuration.push(logs[j].duration);
-
-                if(logsDuration.length > 0){
-                    var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer));
-                    var secondeCumul = logsDuration.reduce(reducer);
-                }else{ 
-                    var cumul = 0;
-                    var secondeCumul = 0;
-                }
-
-                let range = monitors.custom_uptime_ranges;
-                let ranges = range.split('-').reverse();
-                let longerLogDown = vm.searchForLongerLog(monitors.logs, 1);
-                var total = 0;
-                var numberRange = 0;
-
-                for(var k in ranges){
-                    if(ranges[k] !== "0.000"){
-                        numberRange = numberRange + 1;
-                        total = total + parseFloat(ranges[k]);
-                    }
-                }
-
-                if(vm.searchForLongerLog(logs, 2).length == 0){
-                    vm.allLogs = "empty";
-                }else{
-                    vm.allLogs = vm.searchForLongerLog(logs, 2);
-                } 
-                if(total === 0)
-                    ranges.unshift("0.000");
-                else 
-                    ranges.unshift((total/numberRange).toFixed(3));
-
-                result.push({
-                    "status":monitors.status,
-                    "id":monitors.id,
-                    "name":monitors.friendly_name,
-                    "ranges": ranges.map(Number),
-                    "cumul":cumul,
-                    "cumulSeconde":secondeCumul,
-                    "logs":vm.allLogs,
-                    "longerLogDown":longerLogDown,
-                    "timestampLogdown": longerLogDown[0]["timestamp"],
-                    "url":monitors.url,
-                    "ssl":monitors.ssl,
-                    "lighthouse":monitors.lighthouse,
-                    "screenshot":monitors.screenshot,
-                    "isVisible":true,
-                });
-            });
-            vm.filter = result;
+            let results =  await vm.getUptimeRequest(data, url);
+            return results;
         },
         getDataUptimeWeek: async function(){
             let vm = this;

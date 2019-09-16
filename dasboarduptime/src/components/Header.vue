@@ -2,7 +2,7 @@
     <div class="header">
         <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark tablesortable" role="navigation">
             <div class="container">
-                <router-link v-if="hasSearch == false" :to="{name:'Result', params:{
+                <router-link v-if="options.hasSearch == false" :to="{name:'Result', params:{
                     id:$route.params.idAccount,
                     year: date,
                     search: $route.params.search,
@@ -11,45 +11,54 @@
                 }}"><a class="navbar-brand" href="#">Disponibilité - Statistiques</a></router-link>
                 <router-link v-else :to="{name:'Result'}"><a class="navbar-brand" href="#">Disponibilité - Statistiques</a></router-link>
 
-                <template v-if="hasSearch == true">
-                    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="navbarNav">
-                        <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-                            <div class="dropdown">
-                                <button class="btn btn-outline-primary my-2 my-sm-0 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                {{date}}
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <h6 class="dropdown-header">Sélectionner une année :</h6>
-                                    <router-link v-for="month in months" :key="month.id" :to="{name:month.routeName, params:{year:month.year, id:idAccount}}" :class="{active : month.year==date}" tag="a" class="dropdown-item">{{month.year}}</router-link>
-                                </div>
-                            </div>&nbsp;
-
-                            <div class="dropdown">
-                                <button class="btn btn-outline-primary my-2 my-sm-0 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{selectAccount}}
-                                </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                                    <h6 class="dropdown-header">Sélectionner un compte :</h6>
-                                    <router-link v-for="(account, index) in accounts" :key="index" :to="{name:'Account', params:{id: index, year:date}}" :class="{active : index==idAccount}"  tag="a" class="dropdown-item">{{account.name}}</router-link>
-                                </div>
-                            </div>&nbsp;
-                            <button class="btn btn-outline-primary my-2 my-sm-0" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                                <router-link :to="{name:'Dashboard', params:{
-                                        id:idAccount,
-                                        year: date,
-                                    }
-                                }" id="dashboard-link" tag="a">Dashboard</router-link>
+                <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+                        <div v-if="options.hasDate == true" class="dropdown">
+                            <button class="btn btn-outline-primary my-2 my-sm-0 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            {{date}}
                             </button>
-                        </ul>
-                        <button type="button" class="btn btn-outline-primary my-2 my-sm-0 mr-2">
-                            {{nbElement}}
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <h6 class="dropdown-header">Sélectionner une année :</h6>
+                                <template v-if="$route.name === 'Dashboard'">
+                                    <router-link v-for="month in months" :key="month.id" :to="{name:'Dashboard', params:{year:month.year, id:idAccount}}" :class="{active : month.year==date}" tag="a" class="dropdown-item">{{month.year}}</router-link>
+                                </template>
+                                <template v-else>
+                                    <router-link v-for="month in months" :key="month.id" :to="{name:month.routeName, params:{year:month.year, id:idAccount}}" :class="{active : month.year==date}" tag="a" class="dropdown-item">{{month.year}}</router-link>
+                                </template>
+                            </div>
+                        </div>&nbsp;
+
+                        <div v-if="options.hasAccount == true" class="dropdown">
+                            <button class="btn btn-outline-primary my-2 my-sm-0 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{selectAccount}}
+                            </button>
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <h6 class="dropdown-header">Sélectionner un compte :</h6>
+                                <template v-if="$route.name === 'Dashboard'">
+                                    <router-link v-for="(account, index) in accounts" :key="index" :to="{name:'Dashboard', params:{id: index, year:date}}" :class="{active : index==idAccount}"  tag="a" class="dropdown-item">{{account.name}}</router-link>
+                                </template>
+                                <template v-else>
+                                    <router-link v-for="(account, index) in accounts" :key="index" :to="{name:'Account', params:{id: index, year:date}}" :class="{active : index==idAccount}"  tag="a" class="dropdown-item">{{account.name}}</router-link>
+                                </template>
+                            </div>
+                        </div>&nbsp;
+                        <button v-if="options.hasDashboard == true" class="btn btn-outline-primary my-2 my-sm-0" type="button" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                            <router-link :to="{name:'Dashboard', params:{
+                                    id:idAccount,
+                                    year: date,
+                                }
+                            }" id="dashboard-link" tag="a">Dashboard</router-link>
                         </button>
-                        <button class="btn btn-outline-primary my-2 my-sm-0" type="" @click.prevent="downloadCsv"><span class="fas fa-cloud-download-alt" aria-hidden="true"></span> CSV</button>
-                            &nbsp;
-                            
+                    </ul>
+                    <button v-if="options.hasCount == true" type="button" class="btn btn-outline-primary my-2 my-sm-0 mr-2">
+                        {{nbElement}}
+                    </button>
+                    <button v-if="options.hasCsv == true" class="btn btn-outline-primary my-2 my-sm-0" type="" @click.prevent="downloadCsv"><span class="fas fa-cloud-download-alt" aria-hidden="true"></span> CSV</button>
+                        &nbsp;
+                    <template v-if="options.hasSearch == true">
                         <div class="my-2 my-lg-0">
                             <div class="input-group">
                                 <input class="form-control" type="text" id="search" placeholder="Rechercher" v-model="search" @keyup="searchInTab">
@@ -60,8 +69,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </template>
+                    </template>
+                </div>
             </div>
         </nav>
     </div>
@@ -72,22 +81,14 @@ import moment,{ duration } from 'moment'
 import axios from 'axios'
 
 export default {
-    props: ['hasSearch', 'date', 'searchinput', 'accounts', 'idAccount', 'nbElement'],
+    props: ['options', 'date', 'searchinput', 'accounts', 'idAccount', 'nbElement'],
     name: 'Header',
     data(){
         return{
+            search : this.searchinput
         }
     },
     computed : {
-        search: {
-            get:function(){
-                let search = this.searchinput;
-                return search;
-            },
-            set (val) {
-                this.searchinput = val;         
-            }
-        },
         months:{
             get : function(){
                 let currentYear = parseInt(moment().format('YYYY'));
