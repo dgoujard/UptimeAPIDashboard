@@ -70,9 +70,7 @@ export class LogController{
                         }
                         let rangeDuration = this.getDuration(parseInt(range[0]), parseInt(range[1]), custom_days_range, custom_interval)
                         logsSite.forEach((el, idx, array) => {
-                            if (idx === 0 &&  el.datetime < parseInt(range[0]) && el.type === 1 ){ 
-                                durationLog = null
-                            } else {
+                            
                                 if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[1]) && el.type === 1){
                                     durationLog = null
                                 } else {
@@ -88,7 +86,6 @@ export class LogController{
                                         allLogs.push(el)
                                     }
                                 }
-                            }
 
                         });
                         if(parseInt(range[1]) < element.createDatetime) {
