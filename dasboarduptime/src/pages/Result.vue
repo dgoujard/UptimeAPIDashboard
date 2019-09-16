@@ -97,11 +97,9 @@ export default {
             let currentDate;
             let year = moment().format('YYYY');
             if("year" in this.$route.params && parseInt(year) != this.$route.params.year)
-                currentDate = moment(this.$route.params.year, 'YYYY').endOf('year').format('X');
-            else
-                currentDate = moment().format('X');
+                this.currentDate = moment(this.$route.params.year, 'YYYY').endOf('year').format('X');
 
-            let startYear = moment(currentDate, 'X').startOf('year').format('X');
+            let startYear = moment(this.currentDate, 'X').startOf('year').format('X');
             
             if(this.$route.params.id !== undefined){
                 vm.idAccount = this.$route.params.id;
@@ -143,7 +141,6 @@ export default {
             this.daysSelected = days;
             this.currentStartDate = start;
             this.currentDate = currentDate;
-
             this.getData();
         },
         downloadCsv: function(e){

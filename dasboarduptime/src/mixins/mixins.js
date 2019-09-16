@@ -25,7 +25,6 @@ export default {
                 this.date = this.$route.params.year;
                 this.currentDate = moment(this.$route.params.year, 'YYYY').endOf('year').format('X');
             } else {
-                this.currentDate = moment().format('X');
                 this.date = moment(this.currentDate, 'X').startOf('year').format('YYYY');
             }
 
