@@ -120,7 +120,7 @@
                                                             {{logs.hour}}
                                                         </td>
                                                         <td :id="logs.datetime">
-                                                            {{logs.reason.detail}}
+                                                            {{logs.reason.code}} - {{logs.reason.detail}}
                                                         </td>
                                                         <td :id="logs.timestamp">
                                                             {{logs.duration}}
