@@ -129,7 +129,7 @@ export default {
             let vm = this;  
             vm.getRange();
             vm.getMonth();
-            vm.results = await vm.getUptimeData();
+            vm.filter = await vm.getUptimeData();
         },
         getRandomColors: function(downsType){
             let vm = this;

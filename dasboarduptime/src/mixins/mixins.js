@@ -195,7 +195,7 @@ export default {
         },
         getMoyenne: function(from){
             let vm = this;
-            var results = vm.results;
+            var results = vm.filter;
             var ranges = [];
             vm.average = [];
             if(from === "result")
