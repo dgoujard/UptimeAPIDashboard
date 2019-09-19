@@ -49,5 +49,8 @@ export class Routes {
         app.route('/saveLogType')
         .post(this.logTypeController.addLogType);
 
+        app.route('/deleteSite')
+        .post(this.siteController.deleteSite);
+
     }
 }

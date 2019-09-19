@@ -34,4 +34,14 @@ export class SiteController{
             res.json(data)
         });
     }
+
+    public deleteSite(req: Request, res: Response) {
+        let id = req.body.id;
+        let DeleteSite = Site.deleteOne({_id:id}).exec();
+        let DeleteAllSiteLogs = Log.deleteMany({Site:id}).exec();
+        Promise.all([DeleteSite, DeleteAllSiteLogs]).then(site =>{
+            let data = {'State':'success', 'Message':'Site and logs deleted successfully'}
+            res.json(data)
+        });
+    }
 }
