@@ -96,7 +96,7 @@ export class UpdateDataController{
                         isNewSite = true
                         newSite.save();
                     } else {
-                        Site.findOneAndUpdate({_id:siteConcerned._id}, {$set:{ "name": element.friendly_name, "status":element.status, "lastlog":lastlog}}).exec();
+                        Site.findOneAndUpdate({_id:siteConcerned._id}, {$set:{ "name": element.friendly_name, "status":element.status, "lastlog":lastlog, "url":element.url}}).exec();
                     }
                     if(logs.length > 0){
                         logs.forEach(logelement => {
