@@ -61,7 +61,7 @@ export class LogController{
                 let allLogs = Array()
                 if(typeof ranges === "string"){
                     let rangeArray = ranges.split("-")
-                    logsSite = this.getLogsInRange(logsSite, custom_days_range, custom_interval)
+                    logsSite = this.getLogsWithDayAndInterval(logsSite, custom_days_range, custom_interval)
                     rangeArray.forEach(e => {
                         let range = e.split("_")
                         let durationLog = 0; 
@@ -101,6 +101,7 @@ export class LogController{
                         }
                     });
                 }
+                allLogs.sort((a, b) => b.datetime - a.datetime);
                 let accounttype = typeaccount.find(e => e.id.toString() === element.Account.Type)
                 let ssl = {
                     "ssl_monitored":element.ssl_monitored,
@@ -152,8 +153,8 @@ export class LogController{
             res.json(reason)
         });
     }
-    
-    getLogsInRange(logs:Array<any>, forbidenDay: Array<string>, intervals: Array<string>){
+
+    getLogsWithDayAndInterval(logs:Array<any>, forbidenDay: Array<string>, intervals: Array<string>){
         let allLogs = Array()
         let momentTime = parseInt(moment().tz('Europe/Paris').format('X'));
         if(intervals.length > 0 || forbidenDay.length) {
@@ -239,5 +240,5 @@ export class LogController{
         }
         return total
     }
-
 }
+
