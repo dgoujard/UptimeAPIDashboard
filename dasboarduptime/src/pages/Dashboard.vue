@@ -3,7 +3,7 @@
         <Header :options="optionsHeader" :keyRoute="key" :date="date" :idAccount="idAccount" :accounts="accounts"></Header>
         <div class="container" v-if="average != ''">
             <div class="row">
-                <div class="col-lg-4 my-3">
+                <div class="col-lg-3 my-3">
                     <div class="card border-primary">
                         <div class="card-header">
                             <div class="col-xs-9 text-center">
@@ -15,7 +15,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 my-3">
+                <div class="col-lg-3 my-3">
                     <div class="card border-primary">
                         <div class="card-header">
                             <div class="col-xs-9 text-center">
@@ -27,7 +27,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-4 my-3">
+                <div class="col-lg-3 my-3">
                     <div class="card border-primary">
                         <div class="card-header">
                             <div class="col-xs-9 text-center">
@@ -36,6 +36,18 @@
                         </div>
                         <div class="card-body text-center">
                             <span>{{cumulLogDown}}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 my-3">
+                    <div class="card border-primary">
+                        <div class="card-header">
+                            <div class="col-xs-9 text-center">
+                                <strong>Aucune panne depuis</strong>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <span>{{noLogSince}}</span>
                         </div>
                     </div>
                 </div>
@@ -109,6 +121,7 @@ export default {
             accounts: process.env.Accounts, 
             processing:false,
             results: [],
+            lastLog: 0,
             incidents: 0,
             downs: [],
             downsDetailed: [],
@@ -123,6 +136,15 @@ export default {
     },
     watch: {
         '$route': 'getData'
+    },
+    computed: {
+        noLogSince :{
+            get : function(){
+                let currentDate = moment().format('X');
+                let difference = currentDate - this.lastLog;
+                return this.convertSecondIntoTime(difference);    
+            }
+        }
     },
     methods : {
         getData: async function(){
@@ -202,6 +224,11 @@ export default {
                     var monitors = response.data;
                     for(var i in monitors){
                         var logs = monitors[i].logs;
+                        if(logs.length > 0){
+                            if(vm.lastLog < logs[0].datetime){
+                                vm.lastLog = logs[0].datetime;
+                            }
+                        }
                         const reducer = (accumulator, currentValue) => accumulator + currentValue;
                         var logsDuration = Array();
                         for(var j in logs) {
@@ -283,7 +310,7 @@ export default {
                             data: data,
                             backgroundColor:colors[key],
                             hoverBackgroundColor: colors[key]
-                        })
+                        });
                         vm.downs.push(downsTmp[key].count)
                     });
 
