@@ -38,7 +38,7 @@ export class LogController{
         Promise.all([Logs, Sites, TypeAccount]).then(([logs, sites, typeaccount])=>{
             var logArray = Array();
             logs.forEach(element => {
-                if([1, 2].indexOf(element.Type.logTypeId) > -1) {
+                if([1, 2, 99].indexOf(element.Type.logTypeId) > -1) {
                     let tmpLog = {
                         "site":element.Site.uptimeId,
                         "datetime":element.datetime,
@@ -64,29 +64,29 @@ export class LogController{
                     logsSite = this.getLogsInRange(logsSite, custom_days_range, custom_interval)
                     rangeArray.forEach(e => {
                         let range = e.split("_")
-                        let durationLog = 0 
+                        let durationLog = 0; 
                         if(parseInt(range[0]) < element.createDatetime){
                             range[0] = element.createDatetime;
                         }
                         let rangeDuration = this.getDuration(parseInt(range[0]), parseInt(range[1]), custom_days_range, custom_interval)
                         logsSite.forEach((el, idx, array) => {
-                            
-                                if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[1]) && el.type === 1){
-                                    durationLog = null
-                                } else {
-                                    if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[0]) && el.type === 1){
-                                        let duration = el.datetime + el.duration - parseInt(range[0]); 
-                                        durationLog = durationLog + duration
-                                    }else if(el.datetime >= parseInt(range[0]) && el.datetime <= parseInt(range[1]) && el.type === 1){
-                                        let duration = el.duration
-                                        if(el.datetime + el.duration > parseInt(range[1]))
-                                            duration = parseInt(range[1]) - el.datetime
-                                        
-                                        durationLog = durationLog + duration
-                                        allLogs.push(el)
-                                    }
-                                }
-
+                            if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[1]) && el.type === 1){
+                                durationLog = null
+                            } else {
+                                if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[0]) && el.type === 99){
+                                    durationLog = null;
+                                } else if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[0]) && el.type === 1){
+                                    let duration = el.datetime + el.duration - parseInt(range[0]); 
+                                    durationLog = durationLog + duration
+                                }else if(el.datetime >= parseInt(range[0]) && el.datetime <= parseInt(range[1]) && el.type === 1){
+                                    let duration = el.duration
+                                    if(el.datetime + el.duration > parseInt(range[1]))
+                                        duration = parseInt(range[1]) - el.datetime
+                                    
+                                    durationLog = durationLog + duration
+                                    allLogs.push(el)
+                                } 
+                            }
                         });
                         if(parseInt(range[1]) < element.createDatetime) {
                             durationLog = null
