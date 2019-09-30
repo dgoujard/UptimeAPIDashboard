@@ -2,8 +2,8 @@
     <div class="favorites">
         <div class="row">
             <div v-for="(favorite) in favorites" :key="favorite.id" class="btn-group col-1 ml-5 mb-2" role="group" aria-label="Basic example">
-                <button type="button" class="btn btn-primary" :data-value="favorite" @click.prevent="favoriteSearch"> {{favorite}} </button>
-                <button type="button" class="btn btn-primary" :data-value="favorite" @click.prevent="removeFavorite" aria-label="Close">
+                <button type="button" class="btn btn-primary" :data-id="favorite._id" :data-value="favorite.name" @click.prevent="favoriteSearch"> {{favorite.name}} </button>
+                <button type="button" class="btn btn-primary" :data-id="favorite._id" @click.prevent="removeFavorite" aria-label="Close">
                     <span aria-hidden="true" :data-value="favorite">&times;</span>
                 </button>
             </div>
@@ -27,7 +27,7 @@ export default {
         },
         removeFavorite: function(event){
             let vm = this;
-            let value = $(event.target).attr("data-value");
+            let value = $(event.target).attr("data-id");
             vm.$emit('removeFavorite', value);
         }
     }

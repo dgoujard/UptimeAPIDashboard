@@ -10,7 +10,6 @@
                     daysSelected:$route.params.daysSelected
                 }}"><a class="navbar-brand" href="#">Disponibilité - Statistiques</a></router-link>
                 <router-link v-else :to="{name:'Result'}"><a class="navbar-brand" href="#">Disponibilité - Statistiques</a></router-link>
-
                 <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -61,10 +60,10 @@
                     <template v-if="options.hasSearch == true">
                         <div class="my-2 my-lg-0">
                             <div class="input-group">
-                                <input class="form-control" type="text" id="search" placeholder="Rechercher" v-model="search" @keyup="searchInTab">
+                                <input class="form-control" type="text" id="search" placeholder="Rechercher" v-model="searchInput" @keyup="searchInTab">
                                 <div class="input-group-append">
                                     <div class="input-group-append">
-                                        <button class="btn" type="button" @click.prevent="addFavorites" :disabled="search == ''"><span class="fas fa-star addFavorite" aria-hidden="true"></span></button>
+                                        <button class="btn" type="button" @click.prevent="addFavorites" :disabled="searchInput == ''"><span class="fas fa-star addFavorite" aria-hidden="true"></span></button>
                                     </div>
                                 </div>
                             </div>
@@ -85,10 +84,18 @@ export default {
     name: 'Header',
     data(){
         return{
-            search : this.searchinput
+            search : this.searchInput
         }
     },
     computed : {
+        searchInput : {
+            get: function () {
+                return this.searchinput
+            },
+            set: function(value) {
+                this.search = value;
+            }
+        },
         months:{
             get : function(){
                 let currentYear = parseInt(moment().format('YYYY'));

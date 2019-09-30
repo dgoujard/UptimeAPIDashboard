@@ -1,6 +1,8 @@
 <template>
     <div id="dashboard">
         <Header :options="optionsHeader" :keyRoute="key" :date="date" :idAccount="idAccount" :accounts="accounts"></Header>
+        <PlageHoraire v-if="average != ''" :options="optionsPlageHoraire" @searchWithHoraire="searchWithHoraireDashboard" :custominterval="custom_interval" :startDate="startDate" :endDate="currentDate" :limitStart="limitStart" :limitEnd="limitEnd"></PlageHoraire>
+
         <div class="container" v-if="average != ''">
             <div class="row">
                 <div class="col-lg-3 my-3">
@@ -92,6 +94,37 @@
                     </div>
                 </div>
             </div>
+            <div class="row my-3">
+                <div class="col-lg-12 my-3">
+                    <div class="card border-primary">
+                        <div class="card-header">
+                            <div class="col-xs-9 text-center">
+                                <strong>Tous les logs</strong>
+                            </div>
+                        </div>
+                        <div class="card-body text-center allLogs">
+                            <table class="table table-hover table-striped table-fixed table-sm" id="allLogs">
+                                <thead>
+                                    <th>Date</th>
+                                    <th>Site</th>
+                                    <th>Panne</th>
+                                    <th>Durée</th>  
+                                </thead>
+                                <tbody>
+                                    <template v-if="allLogsAccount.length > 0">
+                                        <tr v-for="logs in allLogsAccount" :key="logs.id">
+                                            <td>{{logs.date}} - {{logs.hour}}</td>
+                                            <td>{{logs.site}}</td>
+                                            <td>{{logs.reason.code}}</td>
+                                            <td>{{logs.duration}}</td>
+                                        </tr>
+                                    </template> 
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -103,17 +136,19 @@ import Header from '@/components/Header';
 import LineCharts from '@/components/LineCharts';
 import PieCharts from '@/components/PieCharts';
 import BubbleCharts from '@/components/BubbleCharts';
+import PlageHoraire from '@/components/PlageHoraire';
 import mixin from '@/mixins/mixins.js';
 
 export default {
     name : 'Result',
     mixins:[mixin],
     components: {
-      Header, LineCharts, PieCharts, BubbleCharts
+      Header, LineCharts, PieCharts, BubbleCharts, PlageHoraire
     },
     data(){
         return{
             optionsHeader: {"hasSearch":false, "hasCsv":false, "hasCount":false, "hasDashboard":false, "hasAccount": true, "hasDate": true},
+            optionsPlageHoraire: {"hasDate":true, "hasPlageHoraire": false, "hasDayToExclude":false},
             key:this.$route.params.key,
             date:this.$route.params.year,
             accounts: process.env.Accounts,
@@ -121,6 +156,7 @@ export default {
             accounts: process.env.Accounts, 
             processing:false,
             results: [],
+            allLogsAccount: [],
             lastLog: 0,
             incidents: 0,
             downs: [],
@@ -144,6 +180,24 @@ export default {
                 let difference = currentDate - this.lastLog;
                 return this.convertSecondIntoTime(difference);    
             }
+        },
+        limitStart: {
+            get:function(){
+                let start = moment(moment().format('X'), 'X').startOf('year').format('X');
+                return start;
+            },
+        },
+        limitEnd: {
+            get:function(){
+                let end = "";
+                let year = moment().format('YYYY');
+                if("year" in this.$route.params && parseInt(year) != this.$route.params.year)
+                    end = moment(this.$route.params.year, 'YYYY').endOf('year').format('X');
+                else 
+                    end = moment().format('X');
+
+                return end;
+            },
         }
     },
     methods : {
@@ -176,6 +230,8 @@ export default {
             let currentDate;
             var results = [];
             let cumulLogDownTmp = 0;
+            vm.lastLog = 0;
+            vm.allLogsAccount = [];
             let year = moment().format('YYYY');
             if("year" in this.$route.params && parseInt(year) != this.$route.params.year)
                 currentDate = moment(this.$route.params.year, 'YYYY').endOf('year').format('X');
@@ -231,6 +287,7 @@ export default {
                         }
                         const reducer = (accumulator, currentValue) => accumulator + currentValue;
                         var logsDuration = Array();
+
                         for(var j in logs) {
                             if(typeof downsTmp[logs[j].reason.code] === "undefined"){
                                 downsTmp[logs[j].reason.code] = {count:0, logs:[]};
@@ -244,6 +301,8 @@ export default {
                             if(logs[j].type == 1)
                                 logsDuration.push(logs[j].duration);
                         }
+                        let logsConverted = vm.searchForLongerLogDashboard(logs, 2)
+                        vm.allLogsAccount = vm.allLogsAccount.concat(logsConverted);
                         if(logsDuration.length > 0){
                             var cumul = vm.convertSecondIntoTime(logsDuration.reduce(reducer));
                             var secondeCumul = logsDuration.reduce(reducer);
@@ -251,7 +310,6 @@ export default {
                             var cumul = 0;
                             var secondeCumul = 0;
                         }
-
                         let range = monitors[i].custom_uptime_ranges;
                         let ranges = range.split('-').reverse();
                         let longerLogDown = vm.searchForLongerLog(monitors[i].logs, 1);
@@ -286,7 +344,7 @@ export default {
                         });
                         vm.processing = false;
                     }   
-
+                    vm.allLogsAccount.sort((a, b) => b.datetime - a.datetime);
                     vm.cumulLogDown = vm.convertSecondIntoTime(cumulLogDownTmp);
                     let colors = vm.getRandomColors(downsTmp)
                     Object.keys(downsTmp).forEach(function(key) {
@@ -318,6 +376,44 @@ export default {
                 })
             });
             return results;
+        },
+        searchWithHoraireDashboard: function(interval, days, start, currentDate){
+            this.custom_interval = interval;
+            this.daysSelected = days;
+            this.currentStartDate = start;
+            this.currentDate = currentDate;
+            this.getData();
+        },
+        searchForLongerLogDashboard : function (log, mode){
+            let date = 0;
+            let hour = 0;
+            let duration = 0;
+            let reason;
+            let logs = Array();
+            let logsDown = Array();
+            let maxLogDown = Array();
+            for(var i in log){
+                if(log[i].type == 1){
+                    logs.push(log[i]);
+                }
+            }
+
+            for (var i in logs){
+                let sitename = logs[i].sitename;
+                logsDown.push({"site":logs[i].sitename, "date": moment(logs[i].datetime, 'X').locale('fr').format('L'),"datetime":logs[i].datetime, "hour": moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss'), "reason":logs[i].reason, "duration":this.convertSecondIntoTime(logs[i].duration), "timestamp":logs[i].duration});
+                if (logs[i].duration>duration){
+                    date = moment(logs[i].datetime, 'X').locale('fr').format('dddd L');
+                    hour = moment(logs[i].datetime, 'X').locale('fr').format('HH:mm:ss');
+                    duration = logs[i].duration;
+                    reason = logs[i].reason;
+                }
+            }
+            maxLogDown.push({"date":date, "hour":hour, "reason":reason,  "duration":this.convertSecondIntoTime(duration), "timestamp":duration});
+
+            if(mode == 1)
+                return maxLogDown;
+            else
+                return logsDown;
         }
     }
 }
@@ -325,5 +421,8 @@ export default {
 </script>
 
 <style>
-
+.allLogs {
+    max-height: 400px;
+    overflow: scroll;
+}
 </style>

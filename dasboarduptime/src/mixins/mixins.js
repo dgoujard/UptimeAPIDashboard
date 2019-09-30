@@ -30,8 +30,10 @@ export default {
             let startMonth = moment(this.currentDate, 'X').startOf('month').format('X');
             let startYear = moment(this.currentDate, 'X').startOf('year').format('X');
             if(this.currentStartDate !== null){
-                startMonth = this.currentStartDate;
                 startYear = this.currentStartDate;
+                if(startMonth === moment(this.currentStartDate, 'X').startOf('month').format('X')){
+                    startMonth = this.currentStartDate;
+                }
             }
             this.startDate = startMonth;
             let rang = ""+startMonth+"_"+this.currentDate+"";
@@ -48,7 +50,6 @@ export default {
             }
             let monthRange = months.join('-');
             let range = monthRange;
-            console.log(range)
             this.range = range;
         },  
         getMonth: function(){
@@ -167,6 +168,7 @@ export default {
                     else 
                         ranges.unshift((total/numberRange).toFixed(3));
                     
+
                     let tmpAccountName = monitors[i].accountname.split('@');
                     results.push({
                         "status":monitors[i].status,

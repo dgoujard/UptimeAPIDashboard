@@ -111,7 +111,7 @@
                                                     <th>Raison</th>
                                                     <th>Durée</th>
                                                 </thead>
-                                                <tbody >
+                                                <tbody>
                                                     <tr v-for="logs in filter[0].logs " :key="logs.id">
                                                         <td :id="logs.datetime">
                                                             {{logs.date}}

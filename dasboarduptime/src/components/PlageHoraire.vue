@@ -9,7 +9,7 @@
                     </a>
                 </div>
                 <div id="collapseTwo" class="collapse" data-parent="#accordion">
-                    <div class="m-4">
+                    <div class="m-4" v-if="options.hasDate">
                         <div class="card">
                             <div class="card-header">
                                 Dates
@@ -28,7 +28,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="m-4">
+                    <div class="m-4" v-if="options.hasPlageHoraire">
                         <div class="card">
                             <div class="card-header">
                                 Plages horaires
@@ -69,7 +69,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="m-4">
+                    <div class="m-4" v-if="options.hasDayToExclude">
                         <div class="card">
                             <div class="card-header">
                                 Jours à exclure
@@ -97,7 +97,7 @@ import Datepicker from 'vuejs-datepicker';
 
 export default {
     name: 'PlageHoraire',
-    props: ['custominterval', 'startDate', 'endDate', 'limitStart', 'limitEnd'],
+    props: ['custominterval', 'startDate', 'endDate', 'limitStart', 'limitEnd', 'options'],
     components: {
         Datepicker
     },

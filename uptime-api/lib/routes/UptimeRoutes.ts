@@ -5,6 +5,7 @@ import { SiteController } from "../controllers/SiteController";
 import { UpdateDataController } from "../controllers/UpdateDataController";
 import { LogTypeController } from "../controllers/LogTypeController";
 import { LogController } from "../controllers/LogController";
+import { FavoriteController } from "../controllers/FavoriteController";
 
 
 export class Routes {       
@@ -14,6 +15,7 @@ export class Routes {
     public updateDataController: UpdateDataController = new UpdateDataController() 
     public logTypeController: LogTypeController = new LogTypeController()
     public logController: LogController = new LogController()
+    public favoriteController: FavoriteController = new FavoriteController()
 
     public routes(app): void {          
         app.route('/')
@@ -52,5 +54,9 @@ export class Routes {
         app.route('/deleteSite')
         .post(this.siteController.deleteSite);
 
+        app.route('/favorites')
+        .get(this.favoriteController.listFavorite)
+        .post(this.favoriteController.addFavorite)
+        .delete(this.favoriteController.deleteFavorite);
     }
 }

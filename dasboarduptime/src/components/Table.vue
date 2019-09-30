@@ -34,7 +34,26 @@
                 <tbody v-else-if="data.length > 0 &&  !processing" id="results">
                     <tr v-for="(result, index) in data" :key="index" @dblclick="displayRow(index)" :class="{'not-visible':!result.isVisible}">
                         <td scope="row" class="name text-left">
-                            <p v-if="result.status==2 || result.status==0" class="success text-left">
+                            <p v-if="result.status==0" class="secondary text-left">
+                                <span v-if="result.ssl.ssl_monitored == true && result.ssl.ssl_expireDatetime-currenttimestamp > 604800 && result.ssl.ssl_error == ''" class="fa fa-lock" data-toggle="tooltip" data-placement="top" :title="result.ssl.ssl_expireDatetime | getmonthexpire"></span>
+                                <span v-else-if="result.ssl.ssl_monitored == true && result.ssl.ssl_expireDatetime-currenttimestamp <= 604800 && result.ssl.ssl_error == ''" class="fa fa-lock alert-ssl" data-toggle="tooltip" data-placement="top" :title="result.ssl.ssl_expireDatetime | getmonthexpire"></span>
+                                <span v-else-if="(result.ssl.ssl_monitored == true && (result.ssl.ssl_expireDatetime < currenttimestamp || result.ssl.ssl_error != ''))" class="fa fa-lock-open not-ssl"></span>
+                                <span v-if="result.status==2" class="fa fa-check-circle" aria-hidden="true"></span>
+                                <strong><router-link :to="{name:'Details', 
+                                    params:{
+                                        id:result.id,
+                                        from:$route,
+                                        key:keyAccount,
+                                        date:date,
+                                        search:search,
+                                        idAccount:idAccount,
+                                        interval:custom_interval,
+                                        daysSelected:daysSelected
+                                    }
+                                }">
+                                <span class="libellename">{{result.name}}</span><span class="far fa-chart-bar pt-1 float-right" aria-hidden="true"></span></router-link></strong>
+                            </p>
+                            <p v-if="result.status==2" class="success text-left">
                                 <span v-if="result.ssl.ssl_monitored == true && result.ssl.ssl_expireDatetime-currenttimestamp > 604800 && result.ssl.ssl_error == ''" class="fa fa-lock" data-toggle="tooltip" data-placement="top" :title="result.ssl.ssl_expireDatetime | getmonthexpire"></span>
                                 <span v-else-if="result.ssl.ssl_monitored == true && result.ssl.ssl_expireDatetime-currenttimestamp <= 604800 && result.ssl.ssl_error == ''" class="fa fa-lock alert-ssl" data-toggle="tooltip" data-placement="top" :title="result.ssl.ssl_expireDatetime | getmonthexpire"></span>
                                 <span v-else-if="(result.ssl.ssl_monitored == true && (result.ssl.ssl_expireDatetime < currenttimestamp || result.ssl.ssl_error != ''))" class="fa fa-lock-open not-ssl"></span>

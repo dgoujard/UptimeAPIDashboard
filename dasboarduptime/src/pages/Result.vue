@@ -2,7 +2,7 @@
     <div id="result">
         <Header :options="optionsHeader" @addFavorites="addFavorites" @searchInTab="searchInTab" @downloadCsv="downloadCsv" :date="date" :searchinput="search" :accounts="accounts" :idAccount="idAccount" :nbElement="filter.length"></Header>
         <Favorites @removeFavorite="removeFavorite" v-if="favorites != ''" class="container favorites-cp mb-5" @searchInTab="searchInTab" :favorites="favorites"></Favorites>
-        <PlageHoraire @searchWithHoraire="searchWithHoraire" :custominterval="custom_interval" :startDate="startDate" :endDate="currentDate" :limitStart="limitStart" :limitEnd="limitEnd"></PlageHoraire>
+        <PlageHoraire :options="optionsPlageHoraire" @searchWithHoraire="searchWithHoraire" :custominterval="custom_interval" :startDate="startDate" :endDate="currentDate" :limitStart="limitStart" :limitEnd="limitEnd"></PlageHoraire>
         <div class="container table-year">
             <Table @sortBy="sortBy" @displayRow="displayRow" :months="months" :data="filter" :average="average" :date="date" :search="search" :idAccount="idAccount" :custom_interval="custom_interval" :daysSelected="daysSelected" :hasSort="true" :hasDisplayRow="true" :hasAverage="true" :hasIndispoInfo="true" :processing="processing"></Table>
         </div>
@@ -31,6 +31,7 @@ export default {
     data(){
         return{
             optionsHeader: {"hasSearch":true, "hasCsv":true, "hasCount":true, "hasDashboard":true, "hasAccount": true, "hasDate": true},
+            optionsPlageHoraire: {"hasDate":true, "hasPlageHoraire": true, "hasDayToExclude":true},
             favorites: [],
             sortKey: '',
             csv : null,
@@ -43,13 +44,9 @@ export default {
             endDate: null
         };
     },
-    mounted() {
-        if (localStorage.uptimefavorites) {
-            this.favorites = JSON.parse(localStorage.uptimefavorites);
-        }
-    },
     created(){
         this.getData();
+        this.getFavorite();
     },
     watch: {
         '$route': 'getData'
@@ -72,16 +69,23 @@ export default {
 
                 return end;
             },
-        },
+        }
     },
     methods : {
+        getFavorite: function(){
+            let vm = this;
+            let url = process.env.urlAPI+'favorites';
+            axios.get(url).
+            then(function (response) {
+                vm.favorites = response.data;
+            });
+        },
         getData: async function(){
             let vm = this;
             vm.getRange();
             vm.getMonth();
             vm.results = await vm.getUptimeData();
             vm.filter = vm.results;
-
             vm.getMoyenne("result");
             if(vm.search != ""){
                 vm.searchInTab(vm.search);
@@ -230,23 +234,35 @@ export default {
             vm.filter[index]["isVisible"]= !vm.filter[index]["isVisible"];
             vm.getMoyenne("result");
         },
-        searchInTab: function(value){    
+        searchInTab: function(value){
             var vm = this;
             var result = vm.results.filter(element => element.name.toUpperCase().includes(value.toUpperCase()));
             vm.filter = result;
+            vm.searchValue = value;
             vm.search = value;
             vm.getMoyenne("result");
         },
         removeFavorite : function(val){
-            var index = this.favorites.indexOf(val);
+            let vm = this
+            var value = this.favorites.find(e => e._id === val)
+            var index = this.favorites.indexOf(value);
             if (index > -1) {
-                this.favorites.splice(index, 1);
+                let data = {"id":val};
+                let url = process.env.urlAPI+'favorites';
+                axios.delete(url, {data: data}).
+                then(function (response) {
+                    vm.favorites.splice(index, 1);
+                });
             }
-            localStorage.setItem("uptimefavorites", JSON.stringify(this.favorites));
         },
         addFavorites : function(val){
-            this.favorites.push(val)
-            localStorage.setItem("uptimefavorites", JSON.stringify(this.favorites));
+            let vm = this
+            let data = {"name":val};
+            let url = process.env.urlAPI+'favorites';
+            axios.post(url, data).
+            then(function (response) {
+                vm.favorites.push(response.data)
+            });
         },
     },
 }
