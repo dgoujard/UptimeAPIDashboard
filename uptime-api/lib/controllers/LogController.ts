@@ -62,6 +62,7 @@ export class LogController{
                 if(typeof ranges === "string"){
                     let rangeArray = ranges.split("-")
                     logsSite = this.getLogsWithDayAndInterval(logsSite, custom_days_range, custom_interval)
+                    logsSite.sort((a, b) => a.datetime - b.datetime);
                     rangeArray.forEach(e => {
                         let range = e.split("_")
                         let durationLog = 0; 
@@ -70,6 +71,11 @@ export class LogController{
                         }
                         let rangeDuration = this.getDuration(parseInt(range[0]), parseInt(range[1]), custom_days_range, custom_interval)
                         logsSite.forEach((el, idx, array) => {
+                            if(el === logsSite[logsSite.length-1]){
+                                el.duration = moment().format("X") - el.datetime
+                            } else {
+                                el.duration = logsSite[idx + 1].datetime - el.datetime
+                            }
                             if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[1]) && el.type === 1){
                                 durationLog = null
                             } else {

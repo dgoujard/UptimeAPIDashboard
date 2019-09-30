@@ -78,6 +78,9 @@ export class UpdateDataController{
                     let siteConcerned = sites.find(e => e.uptimeId === element.id);
                     var logs = element.logs
                     let lastlog = 0;
+                    if(siteConcerned !== undefined){
+                        lastlog = siteConcerned.lastlog;
+                    }
                     if(logs.length > 0){
                         lastlog = logs[0].datetime
                     }
