@@ -27,16 +27,15 @@ export default {
             } else {
                 this.date = moment(this.currentDate, 'X').startOf('year').format('YYYY');
             }
-
             let startMonth = moment(this.currentDate, 'X').startOf('month').format('X');
             let startYear = moment(this.currentDate, 'X').startOf('year').format('X');
-            if(this.currentStartDate !== null)
+            if(this.currentStartDate !== null){
+                startMonth = this.currentStartDate;
                 startYear = this.currentStartDate;
-
-            this.startDate = startYear;
+            }
+            this.startDate = startMonth;
             let rang = ""+startMonth+"_"+this.currentDate+"";
             months.push(rang);
-
             let dateInTheMonth = startMonth-1;
             let startBefore = startMonth;
             while(dateInTheMonth>startYear){
@@ -49,9 +48,9 @@ export default {
             }
             let monthRange = months.join('-');
             let range = monthRange;
-
+            console.log(range)
             this.range = range;
-        },
+        },  
         getMonth: function(){
             let months = Array();
 
@@ -73,7 +72,7 @@ export default {
                 months.unshift(name);
                 dateInTheMonth = startMonth-1;
             }
-
+            
             this.months = months
         }, 
         searchForLongerLog: function(log, mode){
