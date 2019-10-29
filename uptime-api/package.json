@@ -20,7 +20,7 @@
     "express": "^4.16.4",
     "moment": "^2.24.0",
     "moment-timezone": "^0.5.26",
-    "mongoose": "^5.4.7",
+    "mongoose": "^5.7.5",
     "node-cron": "^2.0.3",
     "nodemailer": "^5.1.1",
     "nodemon": "^1.18.9",
