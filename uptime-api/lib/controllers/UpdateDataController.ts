@@ -49,7 +49,7 @@ export class UpdateDataController{
     public saveAllSites = async () => {
         let vm = this;
         let Accounts = Account.find({}).exec();
-        let SitePromises = Site.find({}).exec();
+        let SitePromises = Site.find({monitor:true}).exec();
         let LastLogSites = Site.findOne({}).sort('-lastlog').exec();
         let Logtype = LogType.find({}).exec();
         let LogsSave = Log.find({}).exec();

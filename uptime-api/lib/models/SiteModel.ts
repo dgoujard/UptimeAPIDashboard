@@ -28,6 +28,10 @@ export const SiteSchema = new Schema({
         type: Number,
         required: 'Enter a status'
     },
+    monitor: { 
+        type: Boolean,
+        required: 'Enter a status'
+    },
     lastlog: { 
         type: Number,
         required: 'Enter a lastlog'
