@@ -92,12 +92,13 @@ export class UpdateDataController{
                             "createDatetime":element.create_datetime,
                             "Account":AccountId,
                             "status":element.status,
-                            "lastlog":lastlog
+                            "lastlog":lastlog,
+                            "monitor":true
                         }
                         newSiteAdd.push(site)
                         newSite = new Site(site);
                         isNewSite = true
-                        //newSite.save();
+                        newSite.save();
                     } else {
                         if(siteConcerned.monitor === true){
                             Site.findOneAndUpdate({_id:siteConcerned._id}, {$set:{ "name": element.friendly_name, "status":element.status, "lastlog":lastlog, "url":element.url}}).exec();
