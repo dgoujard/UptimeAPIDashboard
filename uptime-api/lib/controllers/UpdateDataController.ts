@@ -49,7 +49,7 @@ export class UpdateDataController{
     public saveAllSites = async () => {
         let vm = this;
         let Accounts = Account.find({}).exec();
-        let SitePromises = Site.find({monitor:true}).exec();
+        let SitePromises = Site.find({}).exec();
         let LastLogSites = Site.findOne({}).sort('-lastlog').exec();
         let Logtype = LogType.find({}).exec();
         let LogsSave = Log.find({}).exec();
@@ -97,9 +97,11 @@ export class UpdateDataController{
                         newSiteAdd.push(site)
                         newSite = new Site(site);
                         isNewSite = true
-                        newSite.save();
+                        //newSite.save();
                     } else {
-                        Site.findOneAndUpdate({_id:siteConcerned._id}, {$set:{ "name": element.friendly_name, "status":element.status, "lastlog":lastlog, "url":element.url}}).exec();
+                        if(siteConcerned.monitor === true){
+                            Site.findOneAndUpdate({_id:siteConcerned._id}, {$set:{ "name": element.friendly_name, "status":element.status, "lastlog":lastlog, "url":element.url}}).exec();
+                        }
                     }
                     if(logs.length > 0){
                         logs.forEach(logelement => {
@@ -119,7 +121,7 @@ export class UpdateDataController{
                                 "code":logelement.reason.code,
                                 "detail":logelement.reason.detail
                             }
-                            if(!isNewSite){
+                            if(!isNewSite && siteConcerned.monitor === true){
                                 let logConcerned = logsSave.find(e => e.datetime === logtosave.datetime && e.Site == siteConcernedId.toString())
                                 if(logConcerned !== undefined) {
                                     Log.findOneAndUpdate({_id:logConcerned._id.toString()}, { "datetime": logtosave.datetime, "duration": logtosave.duration}).exec();    
