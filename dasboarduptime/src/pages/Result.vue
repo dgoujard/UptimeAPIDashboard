@@ -168,7 +168,8 @@ export default {
                         "Décembre":(typeof this.filter[i].ranges[12] !== "undefined" ?  (this.filter[i].ranges[12]).toString().replace(".", ",") : ""),
                         "Plus longue indisponibilté":this.filter[i].longerLogDown[0].date,
                         "Durée":this.filter[i].longerLogDown[0].duration,
-                        "Durée en seconde":this.filter[i].longerLogDown[0].timestamp
+                        "Durée en seconde":this.filter[i].longerLogDown[0].timestamp,
+                        "URL":this.filter[i].url
                     });
             }
             var csv = jsoncsv({data : json, del : ";"});
