@@ -169,7 +169,7 @@ export default {
                         "Plus longue indisponibilté":this.filter[i].longerLogDown[0].date,
                         "Durée":this.filter[i].longerLogDown[0].duration,
                         "Durée en seconde":this.filter[i].longerLogDown[0].timestamp,
-                        "URL":this.filter[i].url
+                        "URL":(typeof this.filter[i].url !== "undefined" ?  (this.filter[i].url).toString().replace("#", "") : "")
                     });
             }
             var csv = jsoncsv({data : json, del : ";"});
