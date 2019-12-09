@@ -332,26 +332,27 @@ export default {
         getUptimeData: async function(){
             let vm = this;
             let data = {
-                "site":[parseInt(this.$route.params.id)],
+                "site":[this.$route.params.id],
                 "ranges":vm.range,
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected
             };
             if(vm.$route.params.interval === undefined){
                 data = {
-                    "site":[parseInt(this.$route.params.id)],
+                    "site":[this.$route.params.id],
                     "ranges":this.range,
                 };
             } else {
                if(vm.$route.params.interval[0] === '0' && vm.$route.params.interval[1] === '86400'){
                     data = {
-                        "site":[parseInt(this.$route.params.id)],
+                        "site":[this.$route.params.id],
                         "ranges":vm.range,
                     };
                 }  
             }
             let url = process.env.urlAPI+'siteslogs';
             let results =  await vm.getUptimeRequest(data, url);
+            console.log(results);
             return results;
         },
         getDataUptimeWeek: async function(){
@@ -360,7 +361,7 @@ export default {
             let startYear = moment(currentDate, 'X').startOf('year').format('X');
             var results = [];
             let data = {
-                "site":[parseInt(vm.$route.params.id)],
+                "site":[vm.$route.params.id],
                 "ranges":this.weekRange,
                 "custom_interval":vm.$route.params.interval,
                 "custom_days_range":vm.$route.params.daysSelected

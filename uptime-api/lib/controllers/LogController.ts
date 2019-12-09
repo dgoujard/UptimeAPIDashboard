@@ -30,9 +30,34 @@ export class LogController{
     // Get logs for each Sites
     public getLogsBySites = (req: Request, res: Response) => {
         const { site, ranges, custom_days_range = Array(), custom_interval = Array(), account=0} = req.body;
-        let Logs = Log.find({}).populate('Site').populate('Type').exec();
-        let TypeAccount = AccountType.find().exec();
-        let Sites =  Site.find().populate('Account').exec();
+        let allRanges = ranges.split("-")
+        let rangesArray = allRanges.map(function(e) { 
+            e = e.split('_'); 
+            return e;
+        });
+        let end = rangesArray[0][1];
+        let start = rangesArray[rangesArray.length - 1][0];
+        let requestLogs = {}
+        let requestSite = {}
+        requestLogs  = {datetime: {$gte: parseInt(start), $lte:parseInt(end)}};
+        if(Array.isArray(site)){
+            let siteArray = site.map(function(e) {
+                return mongoose.Types.ObjectId(e)
+            });
+            requestLogs  = {Site : { $in: siteArray}, datetime: {$gte: parseInt(start), $lte:parseInt(end)}}
+            requestSite = {_id : { $in: siteArray}}
+        }
+        let Logs = Log.find(requestLogs)
+        .populate('Type')
+        .populate({
+            path:"Site",
+            pcopulate : {
+                path:"Account"
+            }
+        }).lean().exec();
+        
+        let TypeAccount = AccountType.find({}).lean().exec();
+        let Sites =  Site.find(requestSite).populate('Account').lean().exec();
         let allSites = Array();
         let momentTime = parseInt(moment().tz('Europe/Paris').format('X'));
         Promise.all([Logs, Sites, TypeAccount]).then(([logs, sites, typeaccount])=>{
@@ -49,12 +74,8 @@ export class LogController{
                     logArray.push(tmpLog)
                 }
             });
-            if(Array.isArray(site))
-                sites = sites.filter(e => site.indexOf(e.uptimeId) > -1)
-                
             if(account != 0)
                 sites = sites.filter(e => e.Account.Type == account)
-            
             sites.forEach(element => {
                 let logsSite = logArray.filter( e => e.site === element.uptimeId)
                 let uptime = [];
@@ -107,8 +128,9 @@ export class LogController{
                         }
                     });
                 }
+
                 allLogs.sort((a, b) => b.datetime - a.datetime);
-                let accounttype = typeaccount.find(e => e.id.toString() === element.Account.Type)
+                let accounttype = typeaccount.find(e => e._id.toString() === element.Account.Type)
                 let ssl = {
                     "ssl_monitored":element.ssl_monitored,
                     "ssl_issuer":element.ssl_issuer,
@@ -131,7 +153,6 @@ export class LogController{
                     "lighthouse_pwa":element.lighthouse_pwa,
                     "lighthouse_dateTime":element.lighthouse_dateTime
                 };
-
                 let siteArray = {
                     "id":element.uptimeId,
                     "moment": parseInt(moment().tz('Europe/Paris').format('X')),
@@ -152,7 +173,6 @@ export class LogController{
                 }
                 allSites.push(siteArray);
             })
-
             allSites.sort((a,b) => ((a.friendly_name).toUpperCase() > (b.friendly_name).toUpperCase()) ? 1 : (((b.friendly_name).toUpperCase() > (a.friendly_name).toUpperCase()) ? -1 : 0));
             res.json(allSites)
         },reason => {

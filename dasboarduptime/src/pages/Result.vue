@@ -169,6 +169,7 @@ export default {
                         "Plus longue indisponibilté":this.filter[i].longerLogDown[0].date,
                         "Durée":this.filter[i].longerLogDown[0].duration,
                         "Durée en seconde":this.filter[i].longerLogDown[0].timestamp,
+                        "Cumul":this.filter[i].cumul,
                         "URL":(typeof this.filter[i].url !== "undefined" ?  (this.filter[i].url).toString().replace("#", "") : "")
                     });
             }
@@ -237,7 +238,7 @@ export default {
         },
         searchInTab: function(value){
             var vm = this;
-            var result = vm.results.filter(element => element.name.toUpperCase().includes(value.toUpperCase()));
+            var result = vm.results.filter(element => this.removeAccent(element.name.toUpperCase()).includes(this.removeAccent(value.toUpperCase())) || this.removeAccent(element.url.toUpperCase()).includes(this.removeAccent(value.toUpperCase())));
             vm.filter = result;
             vm.searchValue = value;
             vm.search = value;
@@ -265,6 +266,16 @@ export default {
                 vm.favorites.push(response.data)
             });
         },
+
+        removeAccent : function(val){
+            var correctedString = val.replace(/[ÁÀÄÂ]/g, "A");
+            correctedString = val.replace(/[ÉÈËÊ]/g, "E");
+            correctedString = val.replace(/[ÍÌÏÎ]/g, "I");
+            correctedString = val.replace(/[ÓÒÖÔ]/g, "O");
+            correctedString = val.replace(/[ÚÙÜÛ]/g, "U");
+
+            return correctedString;
+        }
     },
 }
 

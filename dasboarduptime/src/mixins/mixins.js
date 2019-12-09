@@ -172,7 +172,7 @@ export default {
                     let tmpAccountName = monitors[i].accountname.split('@');
                     results.push({
                         "status":monitors[i].status,
-                        "id":monitors[i].id,
+                        "id":monitors[i].id_object,
                         "name":monitors[i].friendly_name+" - "+tmpAccountName[0],
                         "ranges": ranges.map(Number),
                         "cumul":cumul,
