@@ -22,7 +22,7 @@ export class FavoriteController{
                 res.send(err);
             }
             res.json(favorites);
-        });
+        }).lean();
     }
 
     public deleteFavorite(req: Request, res: Response) {
