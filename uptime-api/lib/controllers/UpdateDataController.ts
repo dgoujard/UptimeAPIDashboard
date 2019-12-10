@@ -122,14 +122,16 @@ export class UpdateDataController{
                                 "code":logelement.reason.code,
                                 "detail":logelement.reason.detail
                             }
-                            if(!isNewSite && siteConcerned.monitor === true){
-                                let logConcerned = logsSave.find(e => e.datetime === logtosave.datetime && e.Site == siteConcernedId.toString())
-                                if(logConcerned !== undefined) {
-                                    Log.findOneAndUpdate({_id:logConcerned._id.toString()}, { "datetime": logtosave.datetime, "duration": logtosave.duration}).exec();    
-                                } else {
-                                    newLogsAdd.push(logtosave)
-                                    let log = new Log(logtosave);
-                                    log.save();
+                            if(!isNewSite){
+                                if(siteConcerned.monitor === true) {
+                                    let logConcerned = logsSave.find(e => e.datetime === logtosave.datetime && e.Site == siteConcernedId.toString())
+                                    if(logConcerned !== undefined) {
+                                        Log.findOneAndUpdate({_id:logConcerned._id.toString()}, { "datetime": logtosave.datetime, "duration": logtosave.duration}).exec();    
+                                    } else {
+                                        newLogsAdd.push(logtosave)
+                                        let log = new Log(logtosave);
+                                        log.save();
+                                    }
                                 }
                             } else {
                                 newLogsAdd.push(logtosave)
