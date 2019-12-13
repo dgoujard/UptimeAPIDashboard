@@ -165,8 +165,6 @@ export class LogController{
                                 } 
                             }
                         });
-                        if(element._id == "5d39cf70a7f30900062f50ad")
-                            console.log(durationLog);
                         if(parseInt(range[1]) < element.createDatetime) {
                             durationLog = null
                         }
