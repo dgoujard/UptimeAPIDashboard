@@ -58,5 +58,9 @@ export class Routes {
         .get(this.favoriteController.listFavorite)
         .post(this.favoriteController.addFavorite)
         .delete(this.favoriteController.deleteFavorite);
+
+        app.route('/deleteduplicatelogs')
+        .get(this.logController.deleteduplicatelogs)
+
     }
 }

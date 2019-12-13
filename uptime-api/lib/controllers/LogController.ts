@@ -6,6 +6,7 @@ import { AccountTypeSchema } from '../models/AccountTypeModel';
 
 //import * as moment from 'moment/moment';
 import * as moment from 'moment-timezone';
+import { cpus } from 'os';
 
 const Log = mongoose.model('Log', LogSchema);
 const Site = mongoose.model('Sites', SiteSchema);
@@ -27,6 +28,54 @@ export class LogController{
             res.json(logs);
         }).populate('Site').populate('Type');
     }
+
+    public deleteduplicatelogs(req: Request, res: Response){
+        Log.find({Site: mongoose.Types.ObjectId('5d39cf6fa7f30900062f4f00')}, (err, logs) => {
+            if(err)
+                res.send(err);
+
+            let logArray = {};
+            let goodLogs = Array();
+            let duplicateLogs = Array();
+            let duplicateLogsToKeep = Array();
+            let duplicateLogsToRemove = Array();
+
+            logs.forEach(element => {
+                let key = element.datetime;
+                if(!logArray.hasOwnProperty(key)){
+                    logArray[key] = Array();
+                }
+                logArray[key].push(element);
+            });
+
+
+            Object.keys(logArray).forEach(function(key) {
+                if(logArray[key].length === 1)
+                    goodLogs.push(logArray[key])
+                else
+                    duplicateLogs.push(logArray[key]);
+            });
+            
+            duplicateLogs.forEach(element => {
+                element = element.sort((a,b) => (a.duration > b.duration) ? 1 : (b.duration  > a.duration) ? -1 : 0);
+            })
+            
+            duplicateLogs.forEach(element => {
+                for(let i = 0; i < element.length; i++){
+                    if(i === 0){
+                        duplicateLogsToKeep.push(element[i]._id);
+                    } else {
+                        duplicateLogsToRemove.push(mongoose.Types.ObjectId(element[i]._id));
+                    }
+                }
+            });
+            //console.log(106082 - duplicateLogsToRemove.length)
+            Log.deleteMany({_id : { $in: duplicateLogsToRemove}}, (err, logs) => {
+                res.json({"message":"Delete done!"})
+            });
+        }).lean();
+    }
+
     // Get logs for each Sites
     public getLogsBySites = (req: Request, res: Response) => {
         const { site, ranges, custom_days_range = Array(), custom_interval = Array(), account=0} = req.body;
@@ -100,7 +149,8 @@ export class LogController{
                             if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[1]) && el.type === 1){
                                 durationLog = null
                             } else {
-                                if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[0]) && el.type === 99){
+                                // Si le dernier log est un log de pause 
+                                if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[0]) && el.type === 99 && el == logsSite[logsSite.length-1]){
                                     durationLog = null;
                                 } else if(el.datetime < parseInt(range[0]) && el.datetime + el.duration > parseInt(range[0]) && el.type === 1){
                                     let duration = el.datetime + el.duration - parseInt(range[0]); 
@@ -115,6 +165,8 @@ export class LogController{
                                 } 
                             }
                         });
+                        if(element._id == "5d39cf70a7f30900062f50ad")
+                            console.log(durationLog);
                         if(parseInt(range[1]) < element.createDatetime) {
                             durationLog = null
                         }
