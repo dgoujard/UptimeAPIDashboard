@@ -112,6 +112,9 @@ export class LogController{
         Promise.all([Logs, Sites, TypeAccount]).then(([logs, sites, typeaccount])=>{
             var logArray = Array();
             logs.forEach(element => {
+                if(element.Site === null){
+                    console.log(element)
+                }
                 if([1, 2, 99].indexOf(element.Type.logTypeId) > -1) {
                     let tmpLog = {
                         "site":element.Site.uptimeId,

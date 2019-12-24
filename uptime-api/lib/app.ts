@@ -5,12 +5,22 @@ import * as cron from "node-cron";
 import { Routes } from "./routes/UptimeRoutes";
 import { UpdateDataController } from "./controllers/UpdateDataController";
 import * as mongoose from "mongoose";
+import * as dotenv from "dotenv";
+
+dotenv.config();
+
+const MONGODB_USER = process.env.MONGODB_USER;
+const MONGODB_PWD = process.env.MONGODB_PWD;
+const MONGODB_SERVER = process.env.MONGODB_SERVER;
+const MONGODB_DB = process.env.MONGODB_DB;
+const MONGODB_PORT = process.env.MONGODB_PORT;
+const EXECUTE_CRON = process.env.EXECUTE_CRON;
 
 class App {
 
     public app: express.Application;
     public routePrv: Routes = new Routes();
-    public mongoUrl: string = 'mongodb://localhost/UptimeDB';
+    public mongoUrl: string = `mongodb://${MONGODB_USER}:${MONGODB_PWD}@${MONGODB_SERVER}:${MONGODB_PORT}/${MONGODB_DB}`;
     public updateDataController = new UpdateDataController()
     constructor() {
         this.app = express();
@@ -18,7 +28,9 @@ class App {
         this.config();
         this.routePrv.routes(this.app);     
         this.mongoSetup();
-        //this.executeCron();
+        if(EXECUTE_CRON == "1"){
+            this.executeCron();
+        }
     }
 
     private config(): void{

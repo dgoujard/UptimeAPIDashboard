@@ -1,5 +1,6 @@
 .DS_Store
-dashboarduptime/node_modules/
+.env
+dashboarduptime/node_modules
 dashboarduptime/dist/*
 dashboarduptime/config/
 dashboarduptime/npm-debug.log*
