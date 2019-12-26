@@ -21,4 +21,10 @@ jobs:
     - name: Publish to Registry uptime-api si branch master
       run: docker push registry.cloud.actigraph.com/uptime-api:latest 
       if: github.ref == 'refs/heads/master'
+    - name: Redeploy service if needed
+      uses: joelwmale/webhook-action@1.0.0
+      if: github.ref == 'refs/heads/master'
+      env:
+        WEBHOOK_URL: ${{ secrets.PORTAINER_WEBHOOK }}
+        data: "{'todo': '1'}"
 
