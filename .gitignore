@@ -16,3 +16,4 @@ uptime-api/.env
 *.ntvs*
 *.njsproj
 *.sln
+node_modules
