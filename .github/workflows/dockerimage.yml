@@ -18,6 +18,7 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Build the Docker image for uptime-api
       run: cd uptime-api && docker build . --file Dockerfile --tag registry.cloud.actigraph.com/uptime-api:latest 
-    - name: Publish to Registry uptime-api
+    - name: Publish to Registry uptime-api si branch master
       run: docker push registry.cloud.actigraph.com/uptime-api:latest 
+      if: github.ref == 'refs/heads/master'
 
