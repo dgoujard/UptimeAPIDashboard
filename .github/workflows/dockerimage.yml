@@ -45,9 +45,21 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Build dasboard Docker main image
-      run: cd dasboarduptime && docker build . --build-arg api_uptime_url=${{ secrets.PORTAINER_UPTIMEAPI_MAIN_WEBHOOK }} --file Dockerfile --tag registry.cloud.actigraph.com/uptime-dashboard:main && cd ..
+      run: cd dasboarduptime && docker build . --build-arg api_uptime_url=${{ secrets.UPTIMEAPI_MAIN_URL }} --file Dockerfile --tag registry.cloud.actigraph.com/uptime-dashboard:main && cd ..
     - name: Build dasboard Docker remote image
-      run: cd dasboarduptime && docker build . --build-arg api_uptime_url=${{ secrets.PORTAINER_UPTIMEAPI_REMOTE_WEBHOOK }} --file Dockerfile --tag registry.cloud.actigraph.com/uptime-dashboard:remote && cd ..
+      run: cd dasboarduptime && docker build . --build-arg api_uptime_url=${{ secrets.UPTIMEAPI_REMOTE_URL }} --file Dockerfile --tag registry.cloud.actigraph.com/uptime-dashboard:remote && cd ..
     - name: Publish dasboard Docker image
       run: docker push registry.cloud.actigraph.com/uptime-dashboard:remote && docker push registry.cloud.actigraph.com/uptime-dashboard:main
       if: github.ref == 'refs/heads/master'
+    - name: Redeploy dasboard main service
+      uses: joelwmale/webhook-action@1.0.0
+      if: github.ref == 'refs/heads/master'
+      env:
+        WEBHOOK_URL: ${{ secrets.PORTAINER_DASHBOARDAPI_MAIN_WEBHOOK }}
+        data: "{'todo': '1'}"
+    - name: Redeploy dasboard remote service
+      uses: joelwmale/webhook-action@1.0.0
+      if: github.ref == 'refs/heads/master'
+      env:
+        WEBHOOK_URL: ${{ secrets.PORTAINER_DASHBOARDAPI_REMOTE_WEBHOOK }}
+        data: "{'todo': '1'}"
